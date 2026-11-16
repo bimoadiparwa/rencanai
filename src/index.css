@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: indigo-600;
+  --color-primary-hover: indigo-700;
+  --color-accent: violet-500;
+  --color-surface: slate-50;
+  --color-surface-dark: slate-900;
+  --color-text: slate-900;
+  --color-text-dark: slate-100;
+  --color-muted: slate-500;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
