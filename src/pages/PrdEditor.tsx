@@ -38,40 +38,63 @@ export default function PrdEditor() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
-      <div className="flex justify-between items-start mb-8">
-        <div>
-          <h1 className="text-2xl font-bold">{prd.title}</h1>
-          <p className="text-muted">{prd.description}</p>
+    <div className="mx-auto max-w-3xl px-4 py-10">
+      <div className="mb-6">
+        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+          dokumen
+        </p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-semibold tracking-tight text-ink">
+              {prd.title}
+            </h1>
+            <p className="mt-1 max-w-[60ch] text-sm text-muted">{prd.description}</p>
+          </div>
+          <Button variant="danger" onClick={handleDelete}>
+            Hapus PRD
+          </Button>
         </div>
-        <Button variant="danger" onClick={handleDelete}>
-          Hapus PRD
-        </Button>
       </div>
-      <Markdown text={prd.content} />
-      <div className="mt-8">
-        <h3 className="font-semibold mb-2">Tugas</h3>
+
+      <article className="rounded-xl border border-line bg-card p-6 shadow-[0_1px_2px_rgba(24,24,27,0.04)] sm:p-8 [&_a]:text-stamp [&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:tracking-tight [&_h1]:text-ink [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-ink [&_li]:text-sm [&_ol]:list-decimal [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-ink-soft [&_table]:text-sm [&_td]:border-line [&_th]:border-line [&_ul]:list-disc">
+        <Markdown text={prd.content} />
+      </article>
+
+      <div className="mt-8 border-t border-line pt-6">
+        <h3 className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+          Tugas
+        </h3>
         <ProgressBar value={done} max={prd.tasks.length} />
-        <div className="space-y-2 mt-4">
+        <div className="mt-4 divide-y divide-line border-y border-line">
           {prd.tasks.map((t) => (
-            <div key={t.id} className="flex items-center gap-2">
+            <div key={t.id} className="flex items-center gap-3 py-3.5">
               <input
                 type="checkbox"
                 checked={t.status === "done"}
                 onChange={() => updateTaskStatus(prd.id, t.id, t.status === "done" ? "todo" : "done")}
+                aria-label={`Tandai "${t.title}" selesai`}
+                className="h-4 w-4 shrink-0 cursor-pointer rounded-[4px] border border-line accent-stamp transition-colors hover:border-stamp"
               />
-              <span className={t.status === "done" ? "line-through text-muted" : ""}>
+              <span
+                className={`min-w-0 flex-1 text-sm ${
+                  t.status === "done" ? "text-muted line-through" : "text-ink"
+                }`}
+              >
                 {t.title}
               </span>
-              <Button variant="ghost" onClick={() => deleteTask(prd.id, t.id)}>
+              <Button variant="ghost" onClick={() => deleteTask(prd.id, t.id)} className="px-2.5 py-1.5 text-xs">
                 Hapus
               </Button>
             </div>
           ))}
-          {prd.tasks.length === 0 && <p className="text-muted">Tugas akan muncul di sini setelah PRD dihasilkan.</p>}
+          {prd.tasks.length === 0 && (
+            <p className="py-4 text-sm text-muted">
+              Tugas akan muncul di sini setelah PRD dihasilkan.
+            </p>
+          )}
         </div>
       </div>
-      <div className="mt-8 flex gap-2">
+      <div className="mt-8 flex flex-wrap gap-3">
         <Link to={`/tasks/${prd.id}`}>
           <Button variant="ghost">← Kembali ke Tugas</Button>
         </Link>

@@ -7,6 +7,10 @@ export function useReveal({ threshold = 0.1, rootMargin = "0px" }: { threshold?:
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return;
+    }
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {

@@ -18,11 +18,15 @@ export function Button({
   onClick?: () => void;
   className?: string;
 }) {
-  const base = "inline-flex items-center justify-center gap-2 rounded-md border px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none";
+  const base =
+    "press inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium tracking-tight transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none";
   const variants = {
-    primary: "bg-primary text-white border-transparent hover:bg-primary-hover",
-    ghost: "bg-transparent border-muted hover:bg-slate-100 dark:hover:bg-slate-800",
-    danger: "bg-red-600 text-white border-transparent hover:bg-red-700",
+    primary:
+      "bg-stamp text-white border border-transparent hover:bg-stamp-dark shadow-[0_1px_2px_rgba(191,59,30,0.25)] hover:shadow-[0_2px_8px_rgba(191,59,30,0.3)] hover:-translate-y-px",
+    ghost:
+      "bg-transparent text-ink border border-line hover:border-ink hover:bg-card",
+    danger:
+      "bg-transparent text-danger border border-line hover:border-danger hover:bg-danger/5",
   };
   return (
     <button
@@ -32,7 +36,7 @@ export function Button({
       disabled={disabled || loading}
     >
       {loading ? (
-        <span className="flex items-center gap-1">
+        <span className="flex items-center gap-1 font-mono text-xs">
           Memuat<span className="animate-pulse">.</span>
         </span>
       ) : (

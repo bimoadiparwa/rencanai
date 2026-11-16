@@ -6,13 +6,15 @@ export function Badge({
   variant?: "default" | "primary" | "muted" | "danger";
 }) {
   const variants = {
-    default: "border border-slate-700 text-slate-600 dark:border-slate-600 dark:text-slate-400",
-    primary: "bg-primary text-white border-transparent",
-    muted: "bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
-    danger: "bg-red-600 text-white border-transparent",
+    default: "border border-ink/25 text-ink-soft bg-transparent",
+    primary: "bg-stamp text-white border border-transparent",
+    muted: "bg-line/70 text-muted border border-transparent",
+    danger: "bg-danger text-white border border-transparent",
   };
   return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${variants[variant]}`}>
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.14em] ${variants[variant]}`}
+    >
       {children}
     </span>
   );

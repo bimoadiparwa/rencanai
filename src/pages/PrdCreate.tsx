@@ -74,20 +74,30 @@ export default function PrdCreate() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-8 px-4">
+    <div className="mx-auto max-w-2xl px-4 py-10">
+      <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+        generator
+      </p>
       {!ready && (
-        <Card className="mb-6">
+        <Card className="mb-6 border-dashed">
           <Badge variant="muted">Perlu API Key</Badge>
-          <h1 className="mt-2 text-xl font-bold">Konfigurasi AI terlebih dahulu</h1>
-          <p className="text-muted">Masukkan API Key Anda di halaman Settings sebelum membuat PRD.</p>
-          <Link to="/settings" className="mt-4 inline-block text-sm underline underline-offset-4">
+          <h1 className="mt-2 text-xl font-semibold tracking-tight text-ink">
+            Konfigurasi AI terlebih dahulu
+          </h1>
+          <p className="mt-1 text-sm text-muted">Masukkan API Key Anda di halaman Settings sebelum membuat PRD.</p>
+          <Link
+            to="/settings"
+            className="mt-4 inline-block text-sm text-ink-soft underline decoration-line underline-offset-4 transition-colors hover:text-stamp hover:decoration-stamp"
+          >
             Buka Pengaturan
           </Link>
         </Card>
       )}
-      <form onSubmit={handleGenerate} className="space-y-4">
+      <form onSubmit={handleGenerate} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium mb-1">Judul Proyek</label>
+          <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-muted">
+            Judul Proyek
+          </label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -95,7 +105,9 @@ export default function PrdCreate() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Deskripsi Singkat</label>
+          <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-muted">
+            Deskripsi Singkat
+          </label>
           <Input
             value={brief}
             onChange={(e) => setBrief(e.target.value)}
@@ -125,17 +137,17 @@ export default function PrdCreate() {
           />
         </div>
         {error && (
-          <Card className="border-red-200 bg-red-50 text-red-800 dark:border-red-900/30 dark:bg-red-900/20 p-3 mt-4">
-            {error}
+          <div className="rounded-md border border-danger/40 bg-danger/5 p-4">
+            <p className="text-sm text-danger">{error}</p>
             <Link
               to="/settings"
-              className="mt-2 inline-block text-sm underline underline-offset-4 text-red-700 dark:text-red-400"
+              className="mt-1.5 inline-block text-sm text-danger underline underline-offset-4 hover:opacity-80"
             >
               Perbaiki di Settings
             </Link>
-          </Card>
+          </div>
         )}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 pt-1">
           <Button type="submit" variant="primary" disabled={!ready || generating}>
             {generating ? "Menghasilkan PRD…" : "Buat PRD dengan AI"}
           </Button>
@@ -146,11 +158,13 @@ export default function PrdCreate() {
           )}
         </div>
       </form>
-      <div className="mt-8">
-        <h3 className="font-semibold mb-2">Hasil PRD</h3>
+      <div className="mt-10 border-t border-line pt-6">
+        <h3 className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+          Hasil PRD
+        </h3>
         <div
           data-testid="prd-content"
-          className="h-64 overflow-y-auto border rounded p-4 bg-white dark:bg-slate-800 font-mono text-sm whitespace-pre-wrap"
+          className="h-64 overflow-y-auto rounded-md border border-line bg-card p-4 font-mono text-[13px] leading-relaxed whitespace-pre-wrap text-ink-soft"
         >
           {content}
         </div>

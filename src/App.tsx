@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import Layout from "./components/layout/Layout";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import PrdCreate from "./pages/PrdCreate";
@@ -9,12 +10,14 @@ import Settings from "./pages/Settings";
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/prd/create" element={<PrdCreate />} />
-      <Route path="/prd/:id" element={<PrdEditor />} />
-      <Route path="/tasks/:prdId" element={<Tasks />} />
-      <Route path="/settings" element={<Settings />} />
+      <Route element={<Layout />}>
+        <Route path="/" element={<Landing />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/prd/create" element={<PrdCreate />} />
+        <Route path="/prd/:id" element={<PrdEditor />} />
+        <Route path="/tasks/:prdId" element={<Tasks />} />
+        <Route path="/settings" element={<Settings />} />
+      </Route>
     </Routes>
   );
 }

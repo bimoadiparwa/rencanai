@@ -7,6 +7,7 @@ export function Input({
   placeholder,
   reveal = false,
   className,
+  ariaLabel,
 }: {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -14,8 +15,11 @@ export function Input({
   placeholder?: string;
   reveal?: boolean;
   className?: string;
+  ariaLabel?: string;
 }) {
   const [shown, setShown] = React.useState(false);
+  const base =
+    "w-full rounded-md border border-line bg-card px-3.5 py-2.5 text-sm text-ink placeholder:text-muted/80 transition-colors duration-150 hover:border-muted/60 focus:border-ink focus:outline-none";
   return (
     <div className="relative w-full">
       <input
@@ -23,13 +27,14 @@ export function Input({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={className}
+        aria-label={ariaLabel}
+        className={reveal ? `${base} pr-24 ${className ?? ""}` : `${base} ${className ?? ""}`}
       />
       {reveal && (
         <button
           type="button"
           onClick={() => setShown((s) => !s)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted text-xs"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 py-1 font-mono text-[11px] uppercase tracking-wider text-muted transition-colors hover:text-stamp"
         >
           {shown ? "Sembunyikan" : "Tampilkan"}
         </button>

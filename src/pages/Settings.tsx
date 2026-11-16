@@ -3,6 +3,7 @@ import { useStore } from "../store/useStore";
 import { Input } from "../components/ui/Input";
 import { Select } from "../components/ui/Select";
 import { Button } from "../components/ui/Button";
+import { Card } from "../components/ui/Card";
 import type { Settings } from "../types";
 
 const PROVIDERS = [
@@ -72,33 +73,60 @@ export default function Settings() {
   };
 
   return (
-    <div className="max-w-xl mx-auto py-8 px-4">
-      <h1 className="text-2xl font-bold mb-6">Pengaturan AI</h1>
-      <p className="text-muted mb-6">
-        Kunci API disimpan hanya di browser Anda dan tidak pernah dikirim ke server kami.
+    <div className="mx-auto max-w-xl px-4 py-10">
+      <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+        konfigurasi
       </p>
-      <Select value={provider} onChange={handleProviderChange} options={PROVIDERS} label="Penyedia" />
-      <Input
-        value={apiKey}
-        onChange={(e) => setApiKey(e.target.value)}
-        type="password"
-        reveal
-        placeholder="Masukkan API Key"
-      />
-      <Select
-        value={model}
-        onChange={setModel}
-        options={MODELS[provider].map((m) => ({ label: m, value: m }))}
-        label="Model"
-      />
-      <Button onClick={handleSave}>Simpan Pengaturan</Button>
-      <div className="mt-8">
-        <h3 className="font-semibold mb-2">Cadangkan Data</h3>
-        <Button variant="ghost" onClick={handleExport}>
-          Ekspor Semua PRD (JSON)
-        </Button>
-        <input type="file" accept=".json" hidden id="import-file" onChange={handleImport} />
-        <label htmlFor="import-file">Impor JSON</label>
+      <h1 className="text-2xl font-semibold tracking-tight text-ink">
+        Pengaturan AI
+      </h1>
+      <p className="mt-2 max-w-[52ch] text-sm leading-relaxed text-muted">
+        Kunci API disimpan hanya di browser Anda dan tidak pernah dikirim ke
+        server kami.
+      </p>
+
+      <Card className="mt-6 space-y-5">
+        <Select value={provider} onChange={handleProviderChange} options={PROVIDERS} label="Penyedia" />
+        <div>
+          <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-muted">
+            API key
+          </label>
+          <Input
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            type="password"
+            reveal
+            ariaLabel="API key"
+            placeholder="Masukkan API Key"
+          />
+        </div>
+        <Select
+          value={model}
+          onChange={setModel}
+          options={MODELS[provider].map((m) => ({ label: m, value: m }))}
+          label="Model"
+        />
+        <div className="pt-1">
+          <Button onClick={handleSave}>Simpan Pengaturan</Button>
+        </div>
+      </Card>
+
+      <div className="mt-8 border-t border-line pt-6">
+        <h3 className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
+          Cadangkan Data
+        </h3>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <Button variant="ghost" onClick={handleExport}>
+            Ekspor Semua PRD (JSON)
+          </Button>
+          <input type="file" accept=".json" hidden id="import-file" onChange={handleImport} />
+          <label
+            htmlFor="import-file"
+            className="cursor-pointer text-sm text-ink-soft underline decoration-line underline-offset-4 transition-colors hover:text-stamp hover:decoration-stamp"
+          >
+            Impor JSON
+          </label>
+        </div>
       </div>
     </div>
   );

@@ -1,21 +1,116 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
+/* Prose tuned to document tokens: ink headings, muted body, stamp links */
 @theme {
-  --color-primary: #4f46e5;
-  --color-primary-hover: #4338ca;
-  --color-accent: #8b5cf6;
-  --color-surface: #f8fafc;
-  --color-surface-dark: #0f172a;
-  --color-text: #0f172a;
-  --color-text-dark: #f1f5f9;
-  --color-muted: #64748b;
+  --color-primary: #bf3b1e;
+  --color-primary-hover: #9c2f16;
+  --color-accent: #bf3b1e;
+  --color-paper: #fafafa;
+  --color-card: #ffffff;
+  --color-ink: #18181b;
+  --color-ink-soft: #3f3f46;
+  --color-muted: #71717a;
+  --color-line: #e4e4e7;
+  --color-stamp: #bf3b1e;
+  --color-stamp-dark: #9c2f16;
+  --color-surface: #fafafa;
+  --color-surface-dark: #18181b;
+  --color-text: #18181b;
+  --color-text-dark: #fafafa;
+  --color-danger: #b91c1c;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
+  --font-sans: "Outfit Variable", "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  background-color: var(--color-surface);
-  color: var(--color-text);
+  font-family: var(--font-sans);
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: #bf3b1e;
+  color: #ffffff;
+}
+
+/* Focus: stamp-red ring everywhere, keyboard only */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-stamp);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Motion (MOTION_INTENSITY 6: entrance choreography, transform/opacity only)
+   One-shot load reveals + stamp impression. Reduced-motion collapses all. ── */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes stampIn {
+  0% {
+    opacity: 0;
+    transform: rotate(-8deg) scale(1.7);
+  }
+  62% {
+    opacity: 1;
+    transform: rotate(-8deg) scale(0.93);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-8deg) scale(1);
+  }
+}
+
+@keyframes checkPop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.rise {
+  animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.stamp-in {
+  animation: stampIn 0.55s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.check-pop {
+  animation: checkPop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .stamp-in,
+  .check-pop {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .stamp-in {
+    transform: rotate(-8deg) !important;
+  }
+}
+
+/* Tactile press for buttons (Rule 5: physical push) */
+.press:active {
+  transform: scale(0.98) translateY(0.5px);
 }
