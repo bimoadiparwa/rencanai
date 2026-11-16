@@ -75,7 +75,7 @@ describe("integration: happy path", () => {
     const apiKeyInput = screen.getByPlaceholderText("Masukkan API Key");
     fireEvent.change(apiKeyInput, { target: { value: "test-key-123" } });
     const modelSelect = screen.getAllByRole("combobox")[1];
-    fireEvent.change(modelSelect, { target: { value: "gemini-1.5-flash-latest" } });
+    fireEvent.change(modelSelect, { target: { value: "gemini-3.8-flash" } });
     act(() => {
       fireEvent.click(screen.getByRole("button", { name: /Simpan Pengaturan/i }));
     });
@@ -84,7 +84,7 @@ describe("integration: happy path", () => {
     expect(useStore.getState().settings).toEqual({
       provider: "gemini",
       apiKey: "test-key-123",
-      model: "gemini-1.5-flash-latest",
+      model: "gemini-3.8-flash",
     });
 
     // 6. Go to /prd/create (no link exists from Settings; navigate directly)

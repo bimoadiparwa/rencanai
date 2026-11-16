@@ -1,3 +1,4 @@
+import { makeId } from "../lib/id";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { Prd, Task, Settings } from "../types";
@@ -9,9 +10,29 @@ export interface StoreAdapter {
 }
 
 const browserStorage: StoreAdapter = {
-  getItem: (key) => Promise.resolve(localStorage.getItem(key) ?? null),
-  setItem: (key, value) => Promise.resolve(localStorage.setItem(key, JSON.stringify(value))),
-  removeItem: (key) => Promise.resolve(localStorage.removeItem(key)),
+  // zustand's JSON storage already serializes the state; store the string as-is.
+  getItem: (key) => {
+    const raw = localStorage.getItem(key);
+    if (raw === null) return Promise.resolve(null);
+    // Recover values written by an earlier build that double-encoded the JSON.
+    if (raw.startsWith('"')) {
+      try {
+        const once = JSON.parse(raw);
+        if (typeof once === "string") return Promise.resolve(once);
+      } catch {
+        // not double-encoded; fall through
+      }
+    }
+    return Promise.resolve(raw);
+  },
+  setItem: (key, value) => {
+    localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
+    return Promise.resolve();
+  },
+  removeItem: (key) => {
+    localStorage.removeItem(key);
+    return Promise.resolve();
+  },
 };
 
 interface PrdState {
@@ -49,7 +70,7 @@ export function createStore(opts: { storage?: StoreAdapter }) {
               p.id === prdId
                 ? {
                     ...p,
-                    tasks: [...p.tasks, { ...task, id: crypto.randomUUID(), createdAt: Date.now() }],
+                    tasks: [...p.tasks, { ...task, id: makeId(), createdAt: Date.now() }],
                     updatedAt: Date.now(),
                   }
                 : p

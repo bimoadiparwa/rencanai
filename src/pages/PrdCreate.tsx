@@ -1,26 +1,19 @@
+import { makeId } from "../lib/id";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useStore } from "../store/useStore";
 import { generatePrd } from "../lib/ai";
+import { getProvider, resolveSettings } from "../lib/providers";
 import { Input } from "../components/ui/Input";
-import { Select } from "../components/ui/Select";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { Card } from "../components/ui/Card";
-import type { Settings } from "../types";
-
-const MODELS = {
-  gemini: ["gemini-1.5-flash-latest", "gemini-1.5-pro-latest"],
-  openrouter: ["openrouter/auto", "google/gemini-2.0-flash-exp:free"],
-  anthropic: ["claude-3-haiku-20240307", "claude-3-sonnet-20240229"],
-  groq: ["llama3-8b-8192", "llama3-70b-8192"],
-};
 
 export default function PrdCreate() {
   const navigate = useNavigate();
-  const settings = useStore((s) => s.settings);
+  const rawSettings = useStore((s) => s.settings);
   const addPrd = useStore((s) => s.addPrd);
-  const setSettings = useStore((s) => s.setSettings);
+  const settings = resolveSettings(rawSettings);
   const [title, setTitle] = useState("");
   const [brief, setBrief] = useState("");
   const [content, setContent] = useState("");
@@ -29,15 +22,13 @@ export default function PrdCreate() {
   const [abortCtrl, setAbortCtrl] = useState<{ abort: () => void } | null>(null);
 
   const ready = Boolean(settings?.apiKey);
-  const models = settings ? MODELS[settings.provider] : MODELS.gemini;
+  const providerInfo = settings ? getProvider(settings.provider) : null;
+  const modelLabel =
+    providerInfo?.models.find((m) => m.id === settings?.model)?.label ?? settings?.model ?? "";
 
-  const handleProviderChange = (v: string) => {
-    setSettings({ ...(settings ?? ({} as Settings)), provider: v as Settings["provider"] });
-  };
-
-  const handleGenerate = async (e: React.FormEvent) => {
+  const handleGenerate = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!ready || !settings) return;
+    if (!ready || !settings || generating) return;
     setError(null);
     setContent("");
     setGenerating(true);
@@ -51,19 +42,19 @@ export default function PrdCreate() {
         accumulated += t;
         setContent((c) => c + t);
       },
-      onComplete: async () => {
+      onComplete: () => {
         setGenerating(false);
-        const prd = {
-          id: crypto.randomUUID(),
+        const id = makeId();
+        addPrd({
+          id,
           title,
           description: brief,
           content: accumulated,
           tasks: [],
           createdAt: Date.now(),
           updatedAt: Date.now(),
-        };
-        addPrd(prd);
-        navigate(`/prd/${prd.id}`);
+        });
+        navigate(`/prd/${id}`);
       },
       onError: (err) => {
         setGenerating(false);
@@ -75,16 +66,17 @@ export default function PrdCreate() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
-        generator
-      </p>
-      {!ready && (
+      <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">generator</p>
+
+      {!ready ? (
         <Card className="mb-6 border-dashed">
           <Badge variant="muted">Perlu API Key</Badge>
           <h1 className="mt-2 text-xl font-semibold tracking-tight text-ink">
             Konfigurasi AI terlebih dahulu
           </h1>
-          <p className="mt-1 text-sm text-muted">Masukkan API Key Anda di halaman Settings sebelum membuat PRD.</p>
+          <p className="mt-1 text-sm text-muted">
+            Masukkan API Key Anda di halaman Settings sebelum membuat PRD.
+          </p>
           <Link
             to="/settings"
             className="mt-4 inline-block text-sm text-ink-soft underline decoration-line underline-offset-4 transition-colors hover:text-stamp hover:decoration-stamp"
@@ -92,7 +84,21 @@ export default function PrdCreate() {
             Buka Pengaturan
           </Link>
         </Card>
+      ) : (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-card px-4 py-3">
+          <p className="text-sm text-ink-soft">
+            <span className="font-medium text-ink">{providerInfo?.label}</span>
+            <span className="text-muted"> · {modelLabel}</span>
+          </p>
+          <Link
+            to="/settings"
+            className="text-sm text-muted underline decoration-line underline-offset-4 transition-colors hover:text-stamp"
+          >
+            Ubah di Pengaturan
+          </Link>
+        </div>
       )}
+
       <form onSubmit={handleGenerate} className="space-y-5">
         <div>
           <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-muted">
@@ -115,29 +121,8 @@ export default function PrdCreate() {
             className="h-32"
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <Select
-            value={settings?.provider ?? "gemini"}
-            onChange={handleProviderChange}
-            options={[
-              { label: "Gemini", value: "gemini" },
-              { label: "OpenRouter", value: "openrouter" },
-              { label: "Anthropic", value: "anthropic" },
-              { label: "Groq", value: "groq" },
-            ]}
-            label="Penyedia AI"
-          />
-          <Select
-            value={settings?.model ?? ""}
-            onChange={(v) =>
-              setSettings({ ...(settings ?? ({} as Settings)), model: v })
-            }
-            options={models.map((m) => ({ label: m, value: m }))}
-            label="Model"
-          />
-        </div>
         {error && (
-          <div className="rounded-md border border-danger/40 bg-danger/5 p-4">
+          <div role="alert" className="rounded-md border border-danger/40 bg-danger/5 p-4">
             <p className="text-sm text-danger">{error}</p>
             <Link
               to="/settings"
@@ -148,25 +133,24 @@ export default function PrdCreate() {
           </div>
         )}
         <div className="flex items-center gap-3 pt-1">
-          <Button type="submit" variant="primary" disabled={!ready || generating}>
+          <Button type="submit" variant="primary" disabled={!ready || generating || !title.trim() || !brief.trim()}>
             {generating ? "Menghasilkan PRD…" : "Buat PRD dengan AI"}
           </Button>
           {generating && abortCtrl && (
-            <Button type="button" variant="danger" onClick={() => abortCtrl?.abort()}>
+            <Button type="button" variant="danger" onClick={() => abortCtrl.abort()}>
               Batal
             </Button>
           )}
         </div>
       </form>
+
       <div className="mt-10 border-t border-line pt-6">
-        <h3 className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
-          Hasil PRD
-        </h3>
+        <h3 className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">Hasil PRD</h3>
         <div
           data-testid="prd-content"
           className="h-64 overflow-y-auto rounded-md border border-line bg-card p-4 font-mono text-[13px] leading-relaxed whitespace-pre-wrap text-ink-soft"
         >
-          {content}
+          {content || (generating ? "" : "Hasil PRD akan muncul di sini saat dibuat.")}
         </div>
       </div>
     </div>

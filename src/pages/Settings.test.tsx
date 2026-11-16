@@ -39,22 +39,22 @@ describe("Settings", () => {
     fireEvent.change(providerSelect(), { target: { value: "openrouter" } });
     const input = screen.getByPlaceholderText("Masukkan API Key");
     fireEvent.change(input, { target: { value: "sk-test-123" } });
-    fireEvent.change(modelSelect(), { target: { value: "openrouter/auto" } });
+    fireEvent.change(modelSelect(), { target: { value: "openrouter/free" } });
     fireEvent.click(screen.getByRole("button", { name: /Simpan Pengaturan/i }));
     expect(useStore.getState().settings).toEqual({
       provider: "openrouter",
       apiKey: "sk-test-123",
-      model: "openrouter/auto",
+      model: "openrouter/free",
     });
   });
 
   it("opsion model menyesuaikan penyedia yang dipilih", () => {
     renderSettings();
-    expect(screen.getByRole("option", { name: "gemini-1.5-flash-latest" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "openrouter/auto" })).not.toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Gemini 3.8 Flash" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Router Gratis (otomatis)" })).not.toBeInTheDocument();
     fireEvent.change(providerSelect(), { target: { value: "openrouter" } });
-    expect(screen.getByRole("option", { name: "openrouter/auto" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "gemini-1.5-flash-latest" })).not.toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Router Gratis (otomatis)" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Gemini 3.8 Flash" })).not.toBeInTheDocument();
   });
 
   it("Ekspor Semua PRD (JSON) memicu unduhan tanpa mengubah settings", () => {

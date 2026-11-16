@@ -49,7 +49,7 @@ describe("PrdCreate", () => {
   });
 
   it("streams content, calls generatePrd with brief, and navigates to /prd/:id", async () => {
-    useStore.getState().setSettings({ provider: "gemini", apiKey: "k", model: "gemini-1.5-flash-latest" });
+    useStore.getState().setSettings({ provider: "gemini", apiKey: "k", model: "gemini-3.8-flash" });
     renderPrdCreate();
 
     fireEvent.change(screen.getByPlaceholderText(/contoh:/i), {

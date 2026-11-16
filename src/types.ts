@@ -1,3 +1,5 @@
+import type { ProviderId } from "./lib/providers";
+
 export type TaskStatus = "todo" | "in-progress" | "done";
 
 export interface Task {
@@ -18,7 +20,7 @@ export interface Prd {
 }
 
 export interface Settings {
-  provider: "gemini" | "openrouter" | "anthropic" | "groq";
+  provider: ProviderId;
   apiKey: string;
   model: string;
 }
