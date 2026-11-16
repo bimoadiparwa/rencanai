@@ -39,19 +39,23 @@ export default function PrdCreate() {
     setError(null);
     setContent("");
     setGenerating(true);
+    let accumulated = "";
     const { abort } = generatePrd({
       provider: settings.provider,
       apiKey: settings.apiKey,
       model: settings.model,
       brief: `${title}\n\n${brief}`,
-      onChunk: (t) => setContent((c) => c + t),
+      onChunk: (t) => {
+        accumulated += t;
+        setContent((c) => c + t);
+      },
       onComplete: async () => {
         setGenerating(false);
         const prd = {
           id: crypto.randomUUID(),
           title,
           description: brief,
-          content,
+          content: accumulated,
           tasks: [],
           createdAt: Date.now(),
           updatedAt: Date.now(),
