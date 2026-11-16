@@ -8,6 +8,8 @@ import {
   resolveSettings,
   splitSse,
   parseSseEvent,
+  streamError,
+  PRD_SECTIONS,
 } from "./providers";
 import { generatePrd } from "./ai";
 import { testConnection } from "./connection";
@@ -90,6 +92,25 @@ describe("stream parsing", () => {
   it("parses OpenAI-style deltas and ignores [DONE]", () => {
     expect(parseSseEvent('data: {"choices":[{"delta":{"content":"Hai"}}]}')).toEqual(["Hai"]);
     expect(parseSseEvent("data: [DONE]")).toEqual([]);
+  });
+});
+
+describe("in-stream provider errors", () => {
+  it("detects an error object injected into the stream", () => {
+    expect(streamError('data: {"error":{"code":502,"message":"provider unavailable"}}')).toBe("provider unavailable");
+    expect(streamError('data: {"choices":[{"delta":{"content":"x"}}]}')).toBeNull();
+  });
+
+  it("surfaces the provider error instead of an empty PRD", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.resolve(new Response(sseBody(['data: {"error":{"code":502,"message":"provider unavailable"}}\n\n']), { status: 200 })))
+    );
+    const onComplete = vi.fn();
+    const onError = vi.fn();
+    await generatePrd({ provider: "openrouter", apiKey: "k", model: "openrouter/free", brief: "b", onChunk: () => {}, onComplete, onError }).promise;
+    expect(onComplete).not.toHaveBeenCalled();
+    expect(onError.mock.calls[0][0].message).toContain("provider unavailable");
   });
 });
 
@@ -196,5 +217,20 @@ describe("generatePrd callback errors", () => {
       onError,
     }).promise;
     expect(onError.mock.calls[0][0].message).toContain("randomUUID");
+  });
+});
+
+describe("PRD prompt and task extraction", () => {
+  it("asks for the full structured PRD template in order", () => {
+    const sys = buildRequest({ provider: "groq", model: "llama-3.3-70b-versatile", apiKey: "k", userText: "x", stream: true });
+    const body = JSON.parse(sys.body);
+    const prompt: string = body.messages[0].content;
+    let last = -1;
+    for (const section of PRD_SECTIONS) {
+      const at = prompt.indexOf(section);
+      expect(at).toBeGreaterThan(last);
+      last = at;
+    }
+    expect(body.temperature).toBe(0.4);
   });
 });

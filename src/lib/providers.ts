@@ -57,7 +57,6 @@ export const PROVIDERS: ProviderInfo[] = [
       { id: "cohere/north-mini-code:free", label: "North Mini Code", note: "Cohere, 256K konteks" },
       { id: "dots-studio/dots-3-note-preview:free", label: "Dots 3 Note (preview)", note: "512K konteks" },
       { id: "particle-ai/particle-1:free", label: "Particle 1", note: "1M konteks" },
-      { id: "thinkingmachines/inkling-2-small:free", label: "Inkling 2 Small", note: "1M konteks" },
       { id: "recursive/flint-v1.0:free", label: "Flint v1.0", note: "262K konteks" },
       { id: "liquid/lfm-3-1.7b:free", label: "LFM 3 1.7B", note: "Model kecil, sangat ringan" },
       { id: "openrouter/free", label: "Router Gratis (otomatis)", note: "Memilih model gratis yang tersedia" },
@@ -87,10 +86,43 @@ export function isFreeModel(provider: string, model: string): boolean {
   return getProvider(provider).models.some((m) => m.id === model);
 }
 
-export const SYSTEM_PROMPT =
-  "Anda adalah manajer produk senior. Buatlah PRD lengkap dalam Bahasa Indonesia dengan bagian: " +
-  "Ringkasan, Tujuan, Cerita Pengguna, Kebutuhan Fungsional, Kebutuhan Non-Fungsional, " +
-  "Rekomendasi Stack Teknologi, dan Tugas yang Disarankan. Gunakan format Markdown.";
+export const PRD_SECTIONS = [
+  "Ringkasan Eksekutif",
+  "Latar Belakang dan Masalah",
+  "Tujuan dan Metrik Keberhasilan",
+  "Di Luar Lingkup",
+  "Pengguna dan Persona",
+  "Cerita Pengguna dan Kriteria Penerimaan",
+  "Kebutuhan Fungsional",
+  "Kebutuhan Non-Fungsional",
+  "Alur Pengguna Utama",
+  "Model Data",
+  "Rekomendasi Stack Teknologi",
+  "Asumsi dan Dependensi",
+  "Risiko dan Mitigasi",
+  "Pertanyaan Terbuka",
+  "Rencana Rilis",
+  "Daftar Tugas",
+] as const;
+
+export const SYSTEM_PROMPT = [
+  "Anda adalah product manager senior dan penulis PRD berpengalaman.",
+  "Tulis PRD lengkap dalam Bahasa Indonesia yang jelas, spesifik, dan dapat langsung dipakai tim engineering dan desain.",
+  "",
+  "Aturan wajib:",
+  "1. Gunakan tepat bagian berikut, berurutan, masing-masing sebagai heading '## ' dengan nama persis:",
+  ...PRD_SECTIONS.map((t, i) => `   ${i + 1}. ## ${t}`),
+  "2. Awali dokumen dengan heading '# ' berisi judul produk, lalu satu paragraf status (Draf v1.0, tanggal tidak perlu).",
+  "3. Tujuan harus terukur: beri target angka dan batas waktu. Contoh: 'Waktu buat PRD di bawah 2 menit untuk 90% pengguna'.",
+  "4. Cerita pengguna memakai format 'Sebagai <peran>, saya ingin <tujuan> agar <manfaat>', diikuti kriteria penerimaan Given/When/Then.",
+  "5. Beri ID tetap: FR-001, NFR-001, US-001, R-001, Q-001. Kebutuhan fungsional dan non-fungsional ditulis sebagai tabel dengan kolom ID, Deskripsi, Prioritas (P0/P1/P2), dan Kriteria Penerimaan.",
+  "6. Prioritas memakai MoSCoW atau P0/P1/P2 dengan konsisten. P0 berarti wajib untuk rilis pertama.",
+  "7. Non-fungsional wajib mencakup performa, keamanan dan privasi data, aksesibilitas, dan kompatibilitas perangkat, masing-masing dengan angka bila memungkinkan.",
+  "8. Rekomendasi stack harus disertai alasan singkat dan alternatif. Pilih teknologi yang sederhana untuk ruang lingkup yang diminta.",
+  "9. Jika deskripsi kurang lengkap, jangan mengarang fakta. Tulis asumsi eksplisit di bagian Asumsi dan Dependensi, dan ajukan pertanyaan terbuka di bagian Pertanyaan Terbuka.",
+  "10. Bagian Daftar Tugas berisi checklist Markdown, satu tugas per baris, dengan format persis: '- [ ] T-001 [P0] Judul tugas singkat (FR-001)'. Urutkan dari fondasi ke fitur, dan kaitkan setiap tugas dengan FR/NFR terkait.",
+  "11. Gunakan Markdown: heading, tabel, dan daftar. Hindari kalimat pembuka basa-basi dan penutup. Mulai langsung dari judul.",
+].join("\n");
 
 export interface RequestSpec {
   url: string;
@@ -116,7 +148,7 @@ export function buildRequest(opts: {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
         contents: [{ role: "user", parts: [{ text: userText }] }],
-        generationConfig: maxTokens ? { maxOutputTokens: maxTokens } : { temperature: 0.7 },
+        generationConfig: maxTokens ? { maxOutputTokens: maxTokens } : { temperature: 0.4 },
       }),
     };
   }
@@ -134,6 +166,7 @@ export function buildRequest(opts: {
         { role: "user", content: userText },
       ],
       stream,
+      temperature: 0.4,
       ...(maxTokens ? { max_tokens: maxTokens } : {}),
     }),
   };
@@ -167,6 +200,21 @@ export function splitSse(buffer: string): { events: string[]; rest: string } {
   const parts = normalized.split("\n\n");
   const rest = parts.pop() ?? "";
   return { events: parts, rest };
+}
+
+// Some providers inject an error object into an otherwise successful stream.
+export function streamError(event: string): string | null {
+  for (const line of event.split("\n")) {
+    if (!line.startsWith("data:")) continue;
+    try {
+      const json = JSON.parse(line.slice(5).trim());
+      const e = json?.error;
+      if (e) return typeof e === "string" ? e : e.message ?? "Penyedia AI menghentikan respons.";
+    } catch {
+      // not JSON
+    }
+  }
+  return null;
 }
 
 export function parseSseEvent(event: string): string[] {

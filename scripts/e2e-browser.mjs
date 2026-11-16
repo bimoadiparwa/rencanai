@@ -26,6 +26,11 @@ const PROVIDERS = providerBlocks.map(([, id, defaultModel, models]) => ({
 }));
 const FREE = new Set(PROVIDERS.flatMap((p) => p.models));
 
+// LIVE mode: OpenRouter calls go to the real API with OPENROUTER_API_KEY (never stored in files).
+const LIVE_KEY = process.env.OPENROUTER_API_KEY ?? "";
+const LIVE = Boolean(LIVE_KEY);
+if (LIVE) PROVIDERS.splice(0, PROVIDERS.length, ...PROVIDERS.filter((p) => p.id === "openrouter"));
+
 const results = [];
 const requestLog = [];
 let id = 0;
@@ -211,7 +216,7 @@ await send("Network.setCacheDisabled", { cacheDisabled: true });
 await send("Fetch.enable", {
   patterns: [
     { urlPattern: "https://generativelanguage.googleapis.com/*", requestStage: "Request" },
-    { urlPattern: "https://openrouter.ai/*", requestStage: "Request" },
+    ...(LIVE ? [] : [{ urlPattern: "https://openrouter.ai/*", requestStage: "Request" }]),
     { urlPattern: "https://api.groq.com/*", requestStage: "Request" },
   ],
 });
@@ -237,15 +242,15 @@ async function generateRun(model, provider) {
   const path = await waitFor(
     `location.pathname.match(/\\/prd\\/[0-9a-f-]{36}$/) ? location.pathname : ""`,
     "redirect to PRD editor",
-    60000
+    LIVE ? 240000 : 60000
   );
-  await waitFor(`!!document.querySelector("h2") && document.body.innerText.includes("Ringkasan")`, "PRD content rendered");
+  await waitFor(`!!document.querySelector("h2") && document.body.innerText.includes("Ringkasan")`, "PRD content rendered", LIVE ? 60000 : 20000);
   const headingText = await evaluate(`[...document.querySelectorAll("h2")].map(h => h.textContent).join(" | ")`);
   return `${path} | ${headingText}`;
 }
 
 // ---- 1. invalid key is reported clearly (no silent failure) ----
-await step("invalid key shows clear error in Settings", async () => {
+if (!LIVE) await step("invalid key shows clear error in Settings", async () => {
   await settingsRun("gemini", "gemini-3.8-flash", "bad-key");
   await evaluate(HELPERS);
   await evaluate(`window.__clickButton("Tes API key")`);
@@ -262,7 +267,7 @@ for (const p of PROVIDERS) {
   for (const model of p.models) {
     const label = `${p.id} / ${model}`;
     await step(`${label}: key test + save + generate PRD`, async () => {
-      const key = `e2e-${p.id}-key`;
+      const key = LIVE ? LIVE_KEY : `e2e-${p.id}-key`;
       await settingsRun(p.id, model, key);
       await evaluate(HELPERS);
       await evaluate(`window.__clickButton("Tes API key")`);

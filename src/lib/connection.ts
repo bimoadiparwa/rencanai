@@ -18,7 +18,7 @@ export async function testConnection(
       apiKey,
       userText: "Balas dengan satu kata: ya",
       stream: false,
-      maxTokens: 256,
+      maxTokens: 512,
     });
     const res = await fetch(spec.url, { method: "POST", headers: spec.headers, body: spec.body });
     if (!res.ok) {
@@ -26,7 +26,8 @@ export async function testConnection(
     }
     const texts = extractTexts(await res.text());
     if (texts.length === 0) {
-      return { ok: false, message: "Kunci diterima, tetapi model tidak mengembalikan teks." };
+      // Reasoning models may use the whole budget on hidden reasoning; the key is still accepted.
+      return { ok: true, message: `Kunci valid. Model ${model} merespons (tanpa teks pada tes singkat).` };
     }
     return { ok: true, message: `Kunci valid. Model ${model} merespons.` };
   } catch (err) {

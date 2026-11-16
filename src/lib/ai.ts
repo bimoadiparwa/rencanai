@@ -1,4 +1,4 @@
-import { buildRequest, describeError, parseSseEvent, splitSse, type ProviderId } from "./providers";
+import { buildRequest, describeError, parseSseEvent, splitSse, streamError, type ProviderId } from "./providers";
 
 export interface GeneratePrdOptions {
   provider: ProviderId;
@@ -55,6 +55,12 @@ export function generatePrd(opts: GeneratePrdOptions): { abort: () => void; prom
         const { events, rest } = splitSse(buffer);
         buffer = rest;
         for (const event of events) {
+          const providerError = streamError(event);
+          if (providerError) {
+            fail(`Penyedia AI menghentikan respons: ${providerError}`);
+            await reader.cancel().catch(() => {});
+            return;
+          }
           for (const text of parseSseEvent(event)) {
             produced = true;
             opts.onChunk(text);
