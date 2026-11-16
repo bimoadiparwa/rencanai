@@ -6,6 +6,7 @@ export function Button({
   variant = "primary",
   loading = false,
   disabled = false,
+  type = "button",
   onClick,
   className,
 }: {
@@ -13,6 +14,7 @@ export function Button({
   variant?: "primary" | "ghost" | "danger";
   loading?: boolean;
   disabled?: boolean;
+  type?: "button" | "submit" | "reset";
   onClick?: () => void;
   className?: string;
 }) {
@@ -25,6 +27,7 @@ export function Button({
   return (
     <button
       className={twMerge(clsx(base, variants[variant], className))}
+      type={type}
       onClick={onClick}
       disabled={disabled || loading}
     >
