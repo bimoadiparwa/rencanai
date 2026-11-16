@@ -18,7 +18,7 @@ export interface Prd {
 }
 
 export interface Settings {
-  provider: "gemini" | "openrouter";
+  provider: "gemini" | "openrouter" | "anthropic" | "groq";
   apiKey: string;
   model: string;
 }

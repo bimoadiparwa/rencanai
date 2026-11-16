@@ -12,6 +12,8 @@ import type { Settings } from "../types";
 const MODELS = {
   gemini: ["gemini-1.5-flash-latest", "gemini-1.5-pro-latest"],
   openrouter: ["openrouter/auto", "google/gemini-2.0-flash-exp:free"],
+  anthropic: ["claude-3-haiku-20240307", "claude-3-sonnet-20240229"],
+  groq: ["llama3-8b-8192", "llama3-70b-8192"],
 };
 
 export default function PrdCreate() {
@@ -108,6 +110,8 @@ export default function PrdCreate() {
             options={[
               { label: "Gemini", value: "gemini" },
               { label: "OpenRouter", value: "openrouter" },
+              { label: "Anthropic", value: "anthropic" },
+              { label: "Groq", value: "groq" },
             ]}
             label="Penyedia AI"
           />

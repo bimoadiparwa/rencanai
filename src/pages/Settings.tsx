@@ -8,11 +8,15 @@ import type { Settings } from "../types";
 const PROVIDERS = [
   { label: "Google Gemini (Gratis tier tersedia)", value: "gemini" },
   { label: "OpenRouter (banyak model gratis)", value: "openrouter" },
+  { label: "Anthropic Claude", value: "anthropic" },
+  { label: "Groq", value: "groq" },
 ];
 
 const MODELS: Record<Settings["provider"], string[]> = {
   gemini: ["gemini-1.5-flash-latest", "gemini-1.5-pro-latest"],
   openrouter: ["openrouter/auto", "google/gemini-2.0-flash-exp:free"],
+  anthropic: ["claude-3-haiku-20240307", "claude-3-sonnet-20240229"],
+  groq: ["llama3-8b-8192", "llama3-70b-8192"],
 };
 
 export default function Settings() {

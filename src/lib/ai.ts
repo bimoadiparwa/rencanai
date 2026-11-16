@@ -6,6 +6,14 @@ export function openrouterUrl(_model: string): string {
   return "https://openrouter.ai/api/v1/chat/completions";
 }
 
+export function anthropicUrl(_model: string): string {
+  return "https://api.anthropic.com/v1/messages";
+}
+
+export function groqUrl(_model: string): string {
+  return "https://api.groq.com/openai/v1/chat/completions";
+}
+
 export function parseStreamChunk(raw: string): string[] {
   const texts: string[] = [];
   for (const line of raw.split("\n")) {
@@ -23,7 +31,13 @@ export function parseStreamChunk(raw: string): string[] {
         }
         continue;
       }
-      // OpenRouter shape
+      // Anthropic shape: delta.type "text_delta" -> delta.text
+      const aDelta = json.delta;
+      if (aDelta && aDelta.type === "text_delta" && typeof aDelta.text === "string") {
+        texts.push(aDelta.text);
+        continue;
+      }
+      // OpenRouter / Groq shape
       const delta = json.choices?.[0]?.delta?.content;
       if (typeof delta === "string") texts.push(delta);
     } catch {
@@ -34,7 +48,7 @@ export function parseStreamChunk(raw: string): string[] {
 }
 
 export interface GeneratePrdOptions {
-  provider: "gemini" | "openrouter";
+  provider: "gemini" | "openrouter" | "anthropic" | "groq";
   apiKey: string;
   model: string;
   brief: string;
@@ -54,26 +68,43 @@ export function generatePrd(opts: GeneratePrdOptions): { abort: () => void; prom
     (async () => {
       try {
         controller = new AbortController();
-        const body =
-          opts.provider === "gemini"
-            ? {
-                contents: [{ parts: [{ text: `${systemPrompt}\n\nDeskripsi proyek: ${opts.brief}` }] }],
-              }
-            : {
-                model: opts.model,
-                messages: [
-                  { role: "system", content: systemPrompt },
-                  { role: "user", content: opts.brief },
-                ],
-                stream: true,
-              };
+        const isGemini = opts.provider === "gemini";
+        const isAnthropic = opts.provider === "anthropic";
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        let url: string;
+        let body: unknown;
 
-        const res = await fetch(opts.provider === "gemini" ? geminiUrl(opts.model, opts.apiKey) : openrouterUrl(opts.model), {
+        if (isGemini) {
+          url = geminiUrl(opts.model, opts.apiKey);
+          body = {
+            contents: [{ parts: [{ text: `${systemPrompt}\n\nDeskripsi proyek: ${opts.brief}` }] }],
+          };
+        } else if (isAnthropic) {
+          url = anthropicUrl(opts.model);
+          headers["x-api-key"] = opts.apiKey;
+          headers["anthropic-version"] = "2023-06-01";
+          body = {
+            model: opts.model,
+            max_tokens: 1024,
+            messages: [{ role: "user", content: `${systemPrompt}\n\nDeskripsi proyek: ${opts.brief}` }],
+            stream: true,
+          };
+        } else {
+          url = opts.provider === "groq" ? groqUrl(opts.model) : openrouterUrl(opts.model);
+          headers["Authorization"] = `Bearer ${opts.apiKey}`;
+          body = {
+            model: opts.model,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: opts.brief },
+            ],
+            stream: true,
+          };
+        }
+
+        const res = await fetch(url, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(opts.provider === "openrouter" ? { Authorization: `Bearer ${opts.apiKey}` } : {}),
-          },
+          headers,
           body: JSON.stringify(body),
           signal: controller.signal,
         });
