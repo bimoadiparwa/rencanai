@@ -194,10 +194,7 @@ export default function Chat() {
           <Button variant="ghost" onClick={handleNewChat}>
             {t("chat.newChat")}
           </Button>
-          <Button
-            onClick={handleApply}
-            disabled={streaming || !assistantText || !hasChanges}
-          >
+          <Button onClick={handleApply} disabled={streaming || !assistantText || !hasChanges}>
             {t("chat.applyToPrd")}
           </Button>
           <Button
@@ -211,7 +208,7 @@ export default function Chat() {
       </div>
 
       {/* PRD comparison: Original vs Refined (documents) */}
-      <div className={`grid gap-6 mb-8 ${chatMinimized ? "grid-cols-1" : "md:grid-cols-2"}`}>
+      <div className={`grid gap-6 ${chatMinimized ? "grid-cols-1" : "md:grid-cols-2"}`}>
         <Card className="flex flex-col h-full">
           <div className="flex items-center justify-between mb-4 border-b border-line pb-2">
             <h2 className="text-lg font-semibold tracking-tight text-ink">
@@ -237,9 +234,9 @@ export default function Chat() {
         </Card>
       </div>
 
-      {/* Chat box - scrollable, minimizable */}
+      {/* Chat box - flex scrollable, minimizable */}
       {!chatMinimized && (
-        <Card className="flex flex-col h-[60vh] max-h-[60vh] min-h-[40vh]">
+        <Card className="flex flex-col h-[55vh] max-h-[55vh] min-h-[35vh]">
           <div className="flex-1 overflow-y-auto p-4">
             {!activeChat?.messages.length && !streaming && (
               <div className="flex h-full flex-col items-center justify-center text-center">
