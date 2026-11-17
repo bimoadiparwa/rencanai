@@ -5,13 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.4.0] - 2026-11-17
 
-### Planned
-- PWA (offline-ready, installable)
-- Standalone task-list generator
-- AI design tools (original scope beyond PRD)
-- Multi-model chat for PRD iteration
+### Added
+- **PWA** — `manifest.json`, service worker (`sw.js`), install banner (`PwaInstallBanner`); app shell cached offline, provider/API calls never cached.
+- **Standalone task-list generator** (`/tasks`) — manage tasks directly without a PRD: add, toggle, delete, clear all, progress bar.
+- **AI design tools** (`/design`) — client-side PRD cover / task-card preview canvas with SVG/HTML export; zero backend.
+- **Multi-model chat** (`/chat`) — PRD iteration chat reusing `buildRequest` streaming; refine a PRD with AI and apply back to the editor.
 
 ## [0.3.0] - 2026-11-17
 
@@ -111,7 +111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub Pages deployment (`gh-pages`) and reverse-engineering analysis report of
   the reference site (`docs/superpowers/specs/`).
 
-[Unreleased]: https://github.com/bimoadiparwa/rencanai/compare/v0.2.0...HEAD
+[0.4.0]: https://github.com/bimoadiparwa/rencanai/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/bimoadiparwa/rencanai/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/bimoadiparwa/rencanai/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/bimoadiparwa/rencanai/releases/tag/v0.1.0

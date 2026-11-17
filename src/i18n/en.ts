@@ -21,6 +21,10 @@ export const en = {
   "theme.toSystem": "Switch to system theme",
   "lang.switch": "Switch to Bahasa Indonesia",
   "lang.other": "ID",
+  // PWA
+  "pwa.install": "Install app",
+  "pwa.installed": "Installed!",
+  "pwa.dismiss": "Dismiss",
 
   // Landing
   "landing.heroTitle": "Create a PRD in seconds",
@@ -104,6 +108,30 @@ export const en = {
   "tasks.markDone": 'Mark "{{title}}" done',
   "tasks.delete": "Delete",
 
+  // Chat
+  "chat.title": "AI Chat",
+  "chat.send": "Send",
+  "chat.newChat": "New chat",
+  "chat.model": "Model",
+  "chat.applyToPrd": "Apply to PRD",
+  "chat.noPrd": "No PRD selected",
+  "chat.empty": "No messages yet. Refine your PRD with AI.",
+  "chat.user": "You",
+  "chat.assistant": "Assistant",
+  "chat.switchPrd": "Open PRD",
+  "chat.refineWithAI": "Refine with AI",
+  "chat.prd": "PRD: {{title}}",
+  "chat.input": "Type a message...",
+  // Design
+  "design.goToDesign": "Design canvas",
+  "design.title": "Design preview",
+  "design.titleLabel": "Project title",
+  "design.accent": "Accent color",
+  "design.layout": "Layout",
+  "design.export": "Export preview",
+  "design.docCover": "Document cover",
+  "design.preview": "Preview",
+  "design.taskCard": "Task card",
   // Settings
   "settings.eyebrow": "configuration",
   "settings.title": "AI Settings",

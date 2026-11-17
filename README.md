@@ -155,12 +155,10 @@ Panggilan AI berlangsung **langsung dari browser ke provider** (Gemini / OpenRou
 - Data hanya di browser aktif — bersihkan data browser = hilang; gunakan Ekspor JSON untuk cadangan.
 - Mode gelap tersedia (terang / gelap / sistem, mengikuti OS).
 
-## Roadmap
-
-- [ ] PWA (offline-ready, installable)
-- [ ] Generator task list mandiri (tanpa PRD)
-- [ ] Alat desain berbasis AI (lanjutan dari scope awal)
-- [ ] Multi-model chat untuk iterasi PRD
+- [x] PWA (offline-ready, installable)
+- [x] Standalone task-list generator (tanpa PRD)
+- [x] Alat desain berbasis AI (lanjutan dari scope awal)
+- [x] Multi-model chat untuk iterasi PRD
 
 ## Kredit
 

@@ -151,6 +151,7 @@ export const id: Dict = {
   "prov.groq.n3": "Model terbuka OpenAI, dengan penalaran",
   "prov.groq.n4": "Model terbuka OpenAI, ringan",
 
+  "design.titleLabel": "Judul proyek",
   "err.400": "Permintaan ditolak penyedia{{detail}}.",
   "err.401":
     "API key tidak valid atau tidak punya akses ke model ini{{detail}}. Periksa kunci di Pengaturan.",
