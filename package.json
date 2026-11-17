@@ -2,7 +2,7 @@
   "name": "rencanai",
   "description": "Generator PRD gratis berbasis AI - tanpa server, tanpa login, BYOK (bring your own key)",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "MIT",
   "author": "Bimo Adiparwa <https://github.com/bimoadiparwa>",
   "homepage": "https://bimoadiparwa.github.io/rencanai/",

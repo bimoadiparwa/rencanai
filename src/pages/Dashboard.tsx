@@ -3,8 +3,10 @@ import { useStore } from "../store/useStore";
 import { EmptyState } from "../components/ui/EmptyState";
 import { Button } from "../components/ui/Button";
 import { useReveal } from "../hooks/useReveal";
+import { useLang, intlLocale } from "../i18n";
 
 export default function Dashboard() {
+  const { lang, t } = useLang();
   const prds = useStore((state) => state.prds);
   const navigate = useNavigate();
   const { ref, visible } = useReveal();
@@ -18,26 +20,26 @@ export default function Dashboard() {
     <div className="mx-auto max-w-3xl px-4 py-10">
       <div ref={ref} style={reveal} className="mb-8">
         <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
-          dokumen
+          {t("dash.eyebrow")}
         </p>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-ink">
-              PRD Anda
+              {t("dash.title")}
             </h1>
             <p className="mt-1 text-sm text-muted">
-              Semua dokumen PRD disimpan di browser Anda.
+              {t("dash.sub")}
             </p>
           </div>
-          <Button onClick={() => navigate("/prd/create")}>Buat PRD Baru</Button>
+          <Button onClick={() => navigate("/prd/create")}>{t("dash.new")}</Button>
         </div>
       </div>
 
       {prds.length === 0 ? (
         <EmptyState
-          title="Belum ada PRD"
-          description="Buat PRD pertama Anda dengan AI — gratis."
-          action={<Button onClick={() => navigate("/prd/create")}>Buat PRD Baru</Button>}
+          title={t("dash.emptyTitle")}
+          description={t("dash.emptyDesc")}
+          action={<Button onClick={() => navigate("/prd/create")}>{t("dash.new")}</Button>}
         />
       ) : (
         <div className="divide-y divide-line border-y border-line">
@@ -52,11 +54,11 @@ export default function Dashboard() {
                   {prd.title}
                 </h2>
                 <p className="mt-0.5 font-mono text-[11px] uppercase tracking-wider text-muted">
-                  {new Date(prd.updatedAt).toLocaleDateString("id-ID")}
+                  {new Date(prd.updatedAt).toLocaleDateString(intlLocale(lang))}
                 </p>
               </div>
               <span className="font-mono text-[11px] uppercase tracking-wider text-muted opacity-0 transition-opacity group-hover:opacity-100">
-                buka →
+                {t("dash.open")}
               </span>
             </Link>
           ))}

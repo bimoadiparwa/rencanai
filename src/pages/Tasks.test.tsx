@@ -90,17 +90,17 @@ describe("Tasks", () => {
     expect(screen.getByText("0%")).toBeDefined();
   });
 
-  it("adds a new task via Tambah button", () => {
+  it("adds a new task via Add button", () => {
     const prd = createPrd({ tasks: [] });
     useStore.getState().addPrd(prd);
     renderTasks();
 
-    const input = screen.getByPlaceholderText(/tambah tugas baru/i);
+    const input = screen.getByPlaceholderText(/add a new task/i);
     act(() => {
       fireEvent.change(input, { target: { value: "Tugas baru" } });
     });
     act(() => {
-      fireEvent.click(screen.getByRole("button", { name: /tambah/i }));
+      fireEvent.click(screen.getByRole("button", { name: /add/i }));
     });
 
     expect(screen.getByText("Tugas baru")).toBeDefined();
@@ -116,7 +116,7 @@ describe("Tasks", () => {
     renderTasks();
 
     act(() => {
-      fireEvent.click(screen.getByRole("button", { name: /hapus/i }));
+      fireEvent.click(screen.getByRole("button", { name: /delete/i }));
     });
 
     expect(screen.queryByText("Tugas satu")).not.toBeInTheDocument();

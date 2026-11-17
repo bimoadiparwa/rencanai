@@ -21,6 +21,8 @@ RencanAI mengubah deskripsi singkat tentang produk Anda menjadi Product Requirem
 - **PRD terstruktur best-practice** — template tetap 16 bagian: Ringkasan Eksekutif, Latar Belakang, Tujuan & Metrik terukur, Di Luar Lingkup, Persona, Cerita Pengguna dengan kriteria penerimaan Given/When/Then, kebutuhan fungsional & non-fungsional bernomor (FR-001, NFR-001) dengan prioritas P0/P1/P2, Alur Pengguna, Model Data, Rekomendasi Stack beserta alasannya, Asumsi, Risiko & Mitigasi, Pertanyaan Terbuka, Rencana Rilis, dan Daftar Tugas.
 - **Streaming langsung** — teks muncul selagi model menulis, bukan setelah selesai.
 - **Ekstraksi tugas otomatis** — checklist `- [ ] T-001 [P0] ...` dari PRD menjadi task board dengan progress bar.
+- **Tema terang / gelap / sistem** — mengikuti OS secara live, tanpa flash saat load.
+- **Dwibahasa: Inggris (default) & Indonesia** — ganti lewat toggle di header; PRD yang dihasilkan mengikuti bahasa UI.
 - **Editor PRD** — ubah hasil PRD, tambah tugas manual, ekspor Markdown.
 - **Multi-provider, hanya model gratis** — lihat tabel di bawah. Tidak ada model berbayar di daftar.
 - **Tes API key** — satu klik membuktikan kunci dan model benar-benar bekerja sebelum Anda mencoba generate, dengan pesan error yang jelas dari penyedia (kunci tidak valid, model tidak ada, rate limit).
@@ -107,7 +109,7 @@ Browser
     ├── providers.ts  — katalog model gratis + builder request per-provider (satu-satunya
     │                    tempat yang tahu format wire Gemini/OpenAI-compatible)
     ├── ai.ts         — klien streaming SSE: parse event, deteksi error di dalam stream,
-    │                    pesan error berbahasa Indonesia
+    │                    pesan error mengikuti bahasa UI (ID/EN)
     ├── connection.ts — tes API key satu panggilan non-streaming
     ├── prd.ts        — ekstraksi checklist "Daftar Tugas" → tasks
     └── id.ts         — UUID v4 aman untuk konteks non-secure (http LAN)
@@ -153,7 +155,6 @@ Panggilan AI berlangsung **langsung dari browser ke provider** (Gemini / OpenRou
 
 ## Roadmap
 
-- [ ] Dark mode
 - [ ] PWA (offline-ready, installable)
 - [ ] Generator task list mandiri (tanpa PRD)
 - [ ] Alat desain berbasis AI (lanjutan dari scope awal)

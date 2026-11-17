@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { useLang } from "../../i18n";
 
 export function Button({
   children,
@@ -28,6 +29,7 @@ export function Button({
     danger:
       "bg-transparent text-danger border border-line hover:border-danger hover:bg-danger/5",
   };
+  const { t } = useLang();
   return (
     <button
       className={twMerge(clsx(base, variants[variant], className))}
@@ -37,7 +39,8 @@ export function Button({
     >
       {loading ? (
         <span className="flex items-center gap-1 font-mono text-xs">
-          Memuat<span className="animate-pulse">.</span>
+          {t("ui.loading")}
+          <span className="animate-pulse">.</span>
         </span>
       ) : (
         children

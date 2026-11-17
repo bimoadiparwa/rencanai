@@ -6,11 +6,13 @@ import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 import { PROVIDERS, getProvider, resolveSettings, type ProviderId } from "../lib/providers";
 import { testConnection } from "../lib/connection";
+import { useLang } from "../i18n";
 import type { Settings } from "../types";
 
 type Status = { tone: "ok" | "error" | "info"; text: string } | null;
 
 export default function Settings() {
+  const { t } = useLang();
   const stored = useStore((s) => s.settings);
   const setSettings = useStore((s) => s.setSettings);
   const resolved = resolveSettings(stored);
@@ -32,21 +34,21 @@ export default function Settings() {
 
   const handleSave = () => {
     if (!apiKey.trim()) {
-      setStatus({ tone: "error", text: "Masukkan API key terlebih dahulu." });
+      setStatus({ tone: "error", text: t("settings.needKey") });
       return;
     }
     const next: Settings = { provider, apiKey: apiKey.trim(), model };
     setSettings(next);
-    setStatus({ tone: "ok", text: "Tersimpan. Anda siap membuat PRD." });
+    setStatus({ tone: "ok", text: t("settings.saved") });
   };
 
   const handleTest = async () => {
     if (!apiKey.trim()) {
-      setStatus({ tone: "error", text: "Masukkan API key terlebih dahulu." });
+      setStatus({ tone: "error", text: t("settings.needKey") });
       return;
     }
     setTesting(true);
-    setStatus({ tone: "info", text: "Menguji koneksi…" });
+    setStatus({ tone: "info", text: t("settings.testing") });
     const result = await testConnection(provider, apiKey.trim(), model);
     setTesting(false);
     setStatus({ tone: result.ok ? "ok" : "error", text: result.message });
@@ -88,33 +90,33 @@ export default function Settings() {
   };
 
   const toneClass = {
-    ok: "border-emerald-700/30 bg-emerald-50 text-emerald-900",
+    ok: "border-emerald-700/30 bg-emerald-50 text-emerald-900 dark:border-emerald-700/40 dark:bg-emerald-950/60 dark:text-emerald-300",
     error: "border-danger/40 bg-danger/5 text-danger",
     info: "border-line bg-card text-ink-soft",
   } as const;
 
   return (
     <div className="mx-auto max-w-xl px-4 py-10">
-      <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">konfigurasi</p>
-      <h1 className="text-2xl font-semibold tracking-tight text-ink">Pengaturan AI</h1>
+      <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">{t("settings.eyebrow")}</p>
+      <h1 className="text-2xl font-semibold tracking-tight text-ink">{t("settings.title")}</h1>
       <p className="mt-2 max-w-[52ch] text-sm leading-relaxed text-muted">
-        Kunci API disimpan hanya di browser Anda dan tidak pernah dikirim ke server kami.
+        {t("settings.privacy")}
       </p>
 
       <Card className="mt-6 space-y-5">
-        <Select value={provider} onChange={handleProviderChange} options={PROVIDERS.map((p) => ({ label: p.label, value: p.id }))} label="Penyedia" />
-        <p className="-mt-3 text-xs text-muted">{info.freeNote}</p>
+        <Select value={provider} onChange={handleProviderChange} options={PROVIDERS.map((p) => ({ label: p.label, value: p.id }))} label={t("settings.provider")} />
+        <p className="-mt-3 text-xs text-muted">{t(info.freeNoteKey)}</p>
 
         <div>
           <div className="mb-1.5 flex items-center justify-between">
-            <label className="font-mono text-[11px] uppercase tracking-wider text-muted">API key</label>
+            <label className="font-mono text-[11px] uppercase tracking-wider text-muted">{t("settings.keyLabel")}</label>
             <a
               href={info.keyUrl}
               target="_blank"
               rel="noreferrer"
               className="text-xs text-muted underline decoration-line underline-offset-4 hover:text-stamp"
             >
-              Dapatkan kunci
+              {t("settings.getKey")}
             </a>
           </div>
           <Input
@@ -122,10 +124,10 @@ export default function Settings() {
             onChange={(e) => setApiKey(e.target.value)}
             type="password"
             reveal
-            ariaLabel="API key"
-            placeholder="Masukkan API Key"
+            ariaLabel={t("settings.keyLabel")}
+            placeholder={t("settings.keyPh")}
           />
-          <p className="mt-1.5 text-xs text-muted">{info.keyHint}</p>
+          <p className="mt-1.5 text-xs text-muted">{t(info.keyHintKey)}</p>
         </div>
 
         <div>
@@ -136,15 +138,15 @@ export default function Settings() {
               setStatus(null);
             }}
             options={info.models.map((m) => ({ label: `${m.label}`, value: m.id }))}
-            label="Model"
+            label={t("settings.model")}
           />
-          {modelInfo && <p className="mt-1.5 text-xs text-muted">{modelInfo.note}</p>}
+          {modelInfo && <p className="mt-1.5 text-xs text-muted">{t(modelInfo.noteKey)}</p>}
         </div>
 
         <div className="flex flex-wrap items-center gap-3 pt-1">
-          <Button onClick={handleSave}>Simpan Pengaturan</Button>
+          <Button onClick={handleSave}>{t("settings.save")}</Button>
           <Button variant="ghost" onClick={handleTest} loading={testing}>
-            Tes API key
+            {t("settings.test")}
           </Button>
         </div>
 
@@ -156,17 +158,17 @@ export default function Settings() {
       </Card>
 
       <div className="mt-8 border-t border-line pt-6">
-        <h3 className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">Cadangkan Data</h3>
+        <h3 className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted">{t("settings.backup")}</h3>
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <Button variant="ghost" onClick={handleExport}>
-            Ekspor Semua PRD (JSON)
+            {t("settings.export")}
           </Button>
           <input type="file" accept=".json" hidden id="import-file" onChange={handleImport} />
           <label
             htmlFor="import-file"
             className="cursor-pointer text-sm text-ink-soft underline decoration-line underline-offset-4 transition-colors hover:text-stamp hover:decoration-stamp"
           >
-            Impor JSON
+            {t("settings.import")}
           </label>
         </div>
       </div>

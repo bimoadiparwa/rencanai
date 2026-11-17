@@ -24,3 +24,5 @@ export interface Settings {
   apiKey: string;
   model: string;
 }
+
+export type Theme = "light" | "dark" | "system";

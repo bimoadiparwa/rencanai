@@ -9,7 +9,7 @@ import {
   splitSse,
   parseSseEvent,
   streamError,
-  PRD_SECTIONS,
+  PRD_SECTIONS_EN_ARR,
 } from "./providers";
 import { generatePrd } from "./ai";
 import { testConnection } from "./connection";
@@ -115,10 +115,10 @@ describe("in-stream provider errors", () => {
 });
 
 describe("describeError", () => {
-  it("explains auth, model, and rate-limit failures in Indonesian", () => {
-    expect(describeError(401, "{}")).toContain("API key tidak valid");
-    expect(describeError(404, '{"error":{"message":"no such model"}}')).toContain("Model tidak ditemukan");
-    expect(describeError(429, "{}")).toContain("Batas gratis tercapai");
+  it("explains auth, model, and rate-limit failures in the UI language", () => {
+    expect(describeError(401, "{}")).toContain("API key is invalid");
+    expect(describeError(404, '{"error":{"message":"no such model"}}')).toContain("Model not found");
+    expect(describeError(429, "{}")).toContain("Free rate limit reached");
   });
 });
 
@@ -168,7 +168,7 @@ describe("generatePrd end to end (stubbed network)", () => {
     vi.stubGlobal("fetch", vi.fn(() => Promise.reject(new TypeError("Failed to fetch"))));
     const onError = vi.fn();
     await generatePrd({ provider: "gemini", apiKey: "k", model: "gemini-3.8-flash", brief: "b", onChunk: () => {}, onError }).promise;
-    expect(onError.mock.calls[0][0].message).toContain("Tidak dapat terhubung");
+    expect(onError.mock.calls[0][0].message).toContain("Cannot connect");
   });
 });
 
@@ -186,7 +186,7 @@ describe("testConnection", () => {
     vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(new Response('{"error":{"message":"invalid key"}}', { status: 401 }))));
     const r = await testConnection("openrouter", "bad", "openrouter/free");
     expect(r.ok).toBe(false);
-    expect(r.message).toContain("API key tidak valid");
+    expect(r.message).toContain("API key is invalid");
   });
 });
 
@@ -226,7 +226,7 @@ describe("PRD prompt and task extraction", () => {
     const body = JSON.parse(sys.body);
     const prompt: string = body.messages[0].content;
     let last = -1;
-    for (const section of PRD_SECTIONS) {
+    for (const section of PRD_SECTIONS_EN_ARR) {
       const at = prompt.indexOf(section);
       expect(at).toBeGreaterThan(last);
       last = at;

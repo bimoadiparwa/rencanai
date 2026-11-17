@@ -1,4 +1,5 @@
 import { buildRequest, describeError, parseSseEvent, splitSse, streamError, type ProviderId } from "./providers";
+import { t } from "../i18n";
 
 export interface GeneratePrdOptions {
   provider: ProviderId;
@@ -41,7 +42,7 @@ export function generatePrd(opts: GeneratePrdOptions): { abort: () => void; prom
         return;
       }
       if (!res.body) {
-        fail("Respons kosong dari penyedia AI.");
+        fail(t("err.emptyResponse"));
         return;
       }
 
@@ -57,7 +58,7 @@ export function generatePrd(opts: GeneratePrdOptions): { abort: () => void; prom
         for (const event of events) {
           const providerError = streamError(event);
           if (providerError) {
-            fail(`Penyedia AI menghentikan respons: ${providerError}`);
+            fail(t("err.stream", { detail: providerError }));
             await reader.cancel().catch(() => {});
             return;
           }
@@ -74,7 +75,7 @@ export function generatePrd(opts: GeneratePrdOptions): { abort: () => void; prom
       }
 
       if (!produced) {
-        fail("Penyedia AI tidak mengembalikan teks. Coba model lain di Pengaturan.");
+        fail(t("err.noText"));
         return;
       }
       finished = true;
@@ -83,10 +84,10 @@ export function generatePrd(opts: GeneratePrdOptions): { abort: () => void; prom
       const isNetwork = err instanceof TypeError && /fetch|network|load failed/i.test(err.message);
       fail(
         isNetwork
-          ? "Tidak dapat terhubung ke penyedia AI. Periksa koneksi internet dan coba lagi."
+          ? t("err.network")
           : err instanceof Error
             ? err.message
-            : "Terjadi kesalahan tak terduga."
+            : t("err.unexpected")
       );
       return;
     }
@@ -95,7 +96,7 @@ export function generatePrd(opts: GeneratePrdOptions): { abort: () => void; prom
       try {
         opts.onComplete?.();
       } catch (err) {
-        fail(err instanceof Error ? err.message : "Gagal menyimpan PRD.");
+        fail(err instanceof Error ? err.message : t("err.saveFailed"));
       }
     }
   })();

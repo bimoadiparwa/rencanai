@@ -42,32 +42,32 @@ function renderPrdCreate() {
 }
 
 describe("PrdCreate", () => {
-  it("shows Perlu API Key and disables Generate without settings", () => {
+  it("shows API key required and disables Generate without settings", () => {
     renderPrdCreate();
-    expect(screen.getByText("Perlu API Key")).toBeDefined();
-    expect(screen.getByRole("button", { name: /buat prd dengan ai/i })).toBeDisabled();
+    expect(screen.getByText("API key required")).toBeDefined();
+    expect(screen.getByRole("button", { name: /create prd with ai/i })).toBeDisabled();
   });
 
   it("streams content, calls generatePrd with brief, and navigates to /prd/:id", async () => {
     useStore.getState().setSettings({ provider: "gemini", apiKey: "k", model: "gemini-3.8-flash" });
     renderPrdCreate();
 
-    fireEvent.change(screen.getByPlaceholderText(/contoh:/i), {
-      target: { value: "Aplikasi Manajemen Tugas" },
+    fireEvent.change(screen.getByPlaceholderText(/e\.g\./i), {
+      target: { value: "Task Management App" },
     });
-    fireEvent.change(screen.getByPlaceholderText(/mengatur tugas/i), {
-      target: { value: "Manajemen tugas harian untuk tim." },
+    fireEvent.change(screen.getByPlaceholderText(/organize your team/i), {
+      target: { value: "Daily task management for the team." },
     });
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /buat prd dengan ai/i }));
+      fireEvent.click(screen.getByRole("button", { name: /create prd with ai/i }));
     });
 
     expect(mockGeneratePrd).toHaveBeenCalledTimes(1);
     const opts = mockGeneratePrd.mock.calls[0][0];
     expect(opts.provider).toBe("gemini");
     expect(opts.apiKey).toBe("k");
-    expect(opts.brief).toContain("Aplikasi Manajemen Tugas");
-    expect(opts.brief).toContain("Manajemen tugas harian");
+    expect(opts.brief).toContain("Task Management App");
+    expect(opts.brief).toContain("Daily task management");
 
     expect(screen.getByTestId("prd-content").textContent).toContain("## Ringkasan");
     expect(screen.getByTestId("current-path").textContent).toMatch(/^\/prd\//);

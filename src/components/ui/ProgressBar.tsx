@@ -1,3 +1,5 @@
+import { useLang } from "../../i18n";
+
 export function ProgressBar({
   value,
   max = 100,
@@ -7,6 +9,7 @@ export function ProgressBar({
   max?: number;
   className?: string;
 }) {
+  const { t } = useLang();
   const pct = max === 0 ? 0 : Math.round((value / max) * 100);
   return (
     <div className={className}>
@@ -17,7 +20,7 @@ export function ProgressBar({
         />
       </div>
       <div className="mt-1.5 flex justify-between font-mono text-[11px] uppercase tracking-wider text-muted">
-        <span>Progres</span>
+        <span>{t("ui.progress")}</span>
         <span>{pct}%</span>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { buildRequest, describeError, extractTexts, type ProviderId } from "./providers";
+import { t } from "../i18n";
 
 export interface ConnectionResult {
   ok: boolean;
@@ -27,18 +28,18 @@ export async function testConnection(
     const texts = extractTexts(await res.text());
     if (texts.length === 0) {
       // Reasoning models may use the whole budget on hidden reasoning; the key is still accepted.
-      return { ok: true, message: `Kunci valid. Model ${model} merespons (tanpa teks pada tes singkat).` };
+      return { ok: true, message: t("conn.okNoText", { model }) };
     }
-    return { ok: true, message: `Kunci valid. Model ${model} merespons.` };
+    return { ok: true, message: t("conn.ok", { model }) };
   } catch (err) {
     const network = err instanceof TypeError;
     return {
       ok: false,
       message: network
-        ? "Tidak dapat terhubung ke penyedia AI. Periksa koneksi internet."
+        ? t("conn.network")
         : err instanceof Error
           ? err.message
-          : "Gagal menguji koneksi.",
+          : t("conn.fail"),
     };
   }
 }

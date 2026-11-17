@@ -1,7 +1,7 @@
 import { makeId } from "../lib/id";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { Prd, Task, Settings } from "../types";
+import type { Prd, Task, Settings, Theme } from "../types";
 
 export interface StoreAdapter {
   getItem(key: string): Promise<string | null>;
@@ -38,10 +38,12 @@ const browserStorage: StoreAdapter = {
 interface PrdState {
   prds: Prd[];
   settings: Settings | null;
+  theme: Theme;
   addPrd: (prd: Prd) => void;
   updatePrd: (id: string, patch: Partial<Omit<Prd, "id">>) => void;
   deletePrd: (id: string) => void;
   setSettings: (settings: Settings) => void;
+  setTheme: (theme: Theme) => void;
   addTask: (prdId: string, task: Omit<Task, "id" | "createdAt">) => void;
   updateTaskStatus: (prdId: string, taskId: string, status: Task["status"]) => void;
   deleteTask: (prdId: string, taskId: string) => void;
@@ -55,6 +57,7 @@ export function createStore(opts: { storage?: StoreAdapter }) {
       (set) => ({
         prds: [],
         settings: null,
+        theme: "system",
         addPrd: (prd) => set((state) => ({ prds: [...state.prds, prd] })),
         updatePrd: (id, patch) =>
           set((state) => ({
@@ -64,6 +67,7 @@ export function createStore(opts: { storage?: StoreAdapter }) {
           })),
         deletePrd: (id) => set((state) => ({ prds: state.prds.filter((p) => p.id !== id) })),
         setSettings: (settings) => set({ settings }),
+        setTheme: (theme) => set({ theme }),
         addTask: (prdId, task) =>
           set((state) => ({
             prds: state.prds.map((p) =>
@@ -110,6 +114,7 @@ export function createStore(opts: { storage?: StoreAdapter }) {
     updatePrd: actions.updatePrd,
     deletePrd: actions.deletePrd,
     setSettings: actions.setSettings,
+    setTheme: actions.setTheme,
     addTask: actions.addTask,
     updateTaskStatus: actions.updateTaskStatus,
     deleteTask: actions.deleteTask,

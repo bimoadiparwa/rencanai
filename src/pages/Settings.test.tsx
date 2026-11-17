@@ -37,10 +37,10 @@ describe("Settings", () => {
   it("Simpan menyimpan provider, apiKey, dan model ke store", () => {
     renderSettings();
     fireEvent.change(providerSelect(), { target: { value: "openrouter" } });
-    const input = screen.getByPlaceholderText("Masukkan API Key");
+    const input = screen.getByPlaceholderText("Enter API key");
     fireEvent.change(input, { target: { value: "sk-test-123" } });
     fireEvent.change(modelSelect(), { target: { value: "openrouter/free" } });
-    fireEvent.click(screen.getByRole("button", { name: /Simpan Pengaturan/i }));
+    fireEvent.click(screen.getByRole("button", { name: /save settings/i }));
     expect(useStore.getState().settings).toEqual({
       provider: "openrouter",
       apiKey: "sk-test-123",
@@ -51,9 +51,9 @@ describe("Settings", () => {
   it("opsion model menyesuaikan penyedia yang dipilih", () => {
     renderSettings();
     expect(screen.getByRole("option", { name: "Gemini 3.8 Flash" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "Router Gratis (otomatis)" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Free Router (auto)" })).not.toBeInTheDocument();
     fireEvent.change(providerSelect(), { target: { value: "openrouter" } });
-    expect(screen.getByRole("option", { name: "Router Gratis (otomatis)" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Free Router (auto)" })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "Gemini 3.8 Flash" })).not.toBeInTheDocument();
   });
 
@@ -70,7 +70,7 @@ describe("Settings", () => {
     const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click");
     renderSettings();
     act(() => {
-      fireEvent.click(screen.getByRole("button", { name: /Ekspor Semua PRD \(JSON\)/i }));
+      fireEvent.click(screen.getByRole("button", { name: /export all PRDs \(JSON\)/i }));
     });
     expect(clickSpy).toHaveBeenCalledTimes(1);
     expect(useStore.getState().settings).toBeNull();

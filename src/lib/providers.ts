@@ -4,20 +4,22 @@
 // GroqCloud models page (production text models).
 // Paid-only models are intentionally absent (Gemini 4 Carbon/Argon, openrouter/auto, Claude).
 
+import { t, getLang, type DictKey, type Lang } from "../i18n";
+
 export type ProviderId = "gemini" | "openrouter" | "groq";
 
 export interface ModelInfo {
   id: string;
   label: string;
-  note: string;
+  noteKey: DictKey;
 }
 
 export interface ProviderInfo {
   id: ProviderId;
   label: string;
   keyUrl: string;
-  keyHint: string;
-  freeNote: string;
+  keyHintKey: DictKey;
+  freeNoteKey: DictKey;
   defaultModel: string;
   models: ModelInfo[];
 }
@@ -27,53 +29,53 @@ export const PROVIDERS: ProviderInfo[] = [
     id: "gemini",
     label: "Google Gemini",
     keyUrl: "https://aistudio.google.com/apikey",
-    keyHint: "Kunci dari Google AI Studio",
-    freeNote: "Free tier tanpa kartu kredit, batas harian berlaku.",
+    keyHintKey: "prov.gemini.hint",
+    freeNoteKey: "prov.gemini.note",
     defaultModel: "gemini-3.8-flash",
     models: [
-      { id: "gemini-3.8-flash", label: "Gemini 3.8 Flash", note: "Paling pintar untuk PRD panjang" },
-      { id: "gemini-3.6-flash", label: "Gemini 3.6 Flash", note: "Generasi sebelumnya, seimbang" },
-      { id: "gemini-3.5-flash-lite", label: "Gemini 3.5 Flash-Lite", note: "Cepat, hemat kuota" },
-      { id: "gemini-3.1-flash-lite", label: "Gemini 3.1 Flash-Lite", note: "Paling ringan" },
-      { id: "gemini-4-hydrogen", label: "Gemini 4 Hydrogen", note: "Model generasi 4, cepat" },
+      { id: "gemini-3.8-flash", label: "Gemini 3.8 Flash", noteKey: "prov.gemini.n1" },
+      { id: "gemini-3.6-flash", label: "Gemini 3.6 Flash", noteKey: "prov.gemini.n2" },
+      { id: "gemini-3.5-flash-lite", label: "Gemini 3.5 Flash-Lite", noteKey: "prov.gemini.n3" },
+      { id: "gemini-3.1-flash-lite", label: "Gemini 3.1 Flash-Lite", noteKey: "prov.gemini.n4" },
+      { id: "gemini-4-hydrogen", label: "Gemini 4 Hydrogen", noteKey: "prov.gemini.n5" },
     ],
   },
   {
     id: "openrouter",
     label: "OpenRouter",
     keyUrl: "https://openrouter.ai/settings/keys",
-    keyHint: "Kunci dari OpenRouter (model bertanda :free)",
-    freeNote: "Model bertanda :free tidak dikenai biaya.",
+    keyHintKey: "prov.or.hint",
+    freeNoteKey: "prov.or.note",
     defaultModel: "google/gemma-4-31b-it:free",
     models: [
-      { id: "google/gemma-4-31b-it:free", label: "Gemma 4 31B", note: "Model Google, 262K konteks" },
-      { id: "google/gemma-4-26b-a4b-it:free", label: "Gemma 4 26B A4B", note: "Model Google, ringan" },
-      { id: "nvidia/nemotron-3-ultra-550b-a55b:free", label: "Nemotron 3 Ultra 550B", note: "Model besar, 1M konteks" },
-      { id: "nvidia/nemotron-3.5-super-vl:free", label: "Nemotron 3.5 Super VL", note: "Model NVIDIA, 1M konteks" },
-      { id: "nvidia/nemotron-3.5-lightning:free", label: "Nemotron 3.5 Lightning", note: "Cepat, 1M konteks" },
-      { id: "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free", label: "Nemotron 3 Nano Omni 30B", note: "Dengan penalaran" },
-      { id: "baidu/ernie-5.5-flash-preview:free", label: "ERNIE 5.5 Flash (preview)", note: "Model Baidu, 1M konteks" },
-      { id: "inclusionai/ling-3.2-flash:free", label: "Ling 3.2 Flash", note: "Cepat, 1M konteks" },
-      { id: "cohere/north-mini-code:free", label: "North Mini Code", note: "Cohere, 256K konteks" },
-      { id: "dots-studio/dots-3-note-preview:free", label: "Dots 3 Note (preview)", note: "512K konteks" },
-      { id: "particle-ai/particle-1:free", label: "Particle 1", note: "1M konteks" },
-      { id: "recursive/flint-v1.0:free", label: "Flint v1.0", note: "262K konteks" },
-      { id: "liquid/lfm-3-1.7b:free", label: "LFM 3 1.7B", note: "Model kecil, sangat ringan" },
-      { id: "openrouter/free", label: "Router Gratis (otomatis)", note: "Memilih model gratis yang tersedia" },
+      { id: "google/gemma-4-31b-it:free", label: "Gemma 4 31B", noteKey: "prov.or.n1" },
+      { id: "google/gemma-4-26b-a4b-it:free", label: "Gemma 4 26B A4B", noteKey: "prov.or.n2" },
+      { id: "nvidia/nemotron-3-ultra-550b-a55b:free", label: "Nemotron 3 Ultra 550B", noteKey: "prov.or.n3" },
+      { id: "nvidia/nemotron-3.5-super-vl:free", label: "Nemotron 3.5 Super VL", noteKey: "prov.or.n4" },
+      { id: "nvidia/nemotron-3.5-lightning:free", label: "Nemotron 3.5 Lightning", noteKey: "prov.or.n5" },
+      { id: "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free", label: "Nemotron 3 Nano Omni 30B", noteKey: "prov.or.n6" },
+      { id: "baidu/ernie-5.5-flash-preview:free", label: "ERNIE 5.5 Flash (preview)", noteKey: "prov.or.n7" },
+      { id: "inclusionai/ling-3.2-flash:free", label: "Ling 3.2 Flash", noteKey: "prov.or.n5" },
+      { id: "cohere/north-mini-code:free", label: "North Mini Code", noteKey: "prov.or.n8" },
+      { id: "dots-studio/dots-3-note-preview:free", label: "Dots 3 Note (preview)", noteKey: "prov.or.n9" },
+      { id: "particle-ai/particle-1:free", label: "Particle 1", noteKey: "prov.or.n10" },
+      { id: "recursive/flint-v1.0:free", label: "Flint v1.0", noteKey: "prov.or.n11" },
+      { id: "liquid/lfm-3-1.7b:free", label: "LFM 3 1.7B", noteKey: "prov.or.n12" },
+      { id: "openrouter/free", label: "Free Router (auto)", noteKey: "prov.or.n13" },
     ],
   },
   {
     id: "groq",
     label: "Groq",
     keyUrl: "https://console.groq.com/keys",
-    keyHint: "Kunci dari GroqCloud Console",
-    freeNote: "Free plan dengan batas rate; sangat cepat.",
+    keyHintKey: "prov.groq.hint",
+    freeNoteKey: "prov.groq.note",
     defaultModel: "llama-3.3-70b-versatile",
     models: [
-      { id: "llama-3.3-70b-versatile", label: "Llama 3.3 70B", note: "Seimbang, 131K konteks" },
-      { id: "llama-3.1-8b-instant", label: "Llama 3.1 8B Instant", note: "Paling cepat" },
-      { id: "openai/gpt-oss-120b", label: "GPT-OSS 120B", note: "Model terbuka OpenAI, dengan penalaran" },
-      { id: "openai/gpt-oss-20b", label: "GPT-OSS 20B", note: "Model terbuka OpenAI, ringan" },
+      { id: "llama-3.3-70b-versatile", label: "Llama 3.3 70B", noteKey: "prov.groq.n1" },
+      { id: "llama-3.1-8b-instant", label: "Llama 3.1 8B Instant", noteKey: "prov.groq.n2" },
+      { id: "openai/gpt-oss-120b", label: "GPT-OSS 120B", noteKey: "prov.groq.n3" },
+      { id: "openai/gpt-oss-20b", label: "GPT-OSS 20B", noteKey: "prov.groq.n4" },
     ],
   },
 ];
@@ -86,7 +88,9 @@ export function isFreeModel(provider: string, model: string): boolean {
   return getProvider(provider).models.some((m) => m.id === model);
 }
 
-export const PRD_SECTIONS = [
+// PRD template sections per UI language. The PRD itself is written in the
+// language the app is currently displayed in.
+const PRD_SECTIONS_ID = [
   "Ringkasan Eksekutif",
   "Latar Belakang dan Masalah",
   "Tujuan dan Metrik Keberhasilan",
@@ -105,24 +109,73 @@ export const PRD_SECTIONS = [
   "Daftar Tugas",
 ] as const;
 
-export const SYSTEM_PROMPT = [
-  "Anda adalah product manager senior dan penulis PRD berpengalaman.",
-  "Tulis PRD lengkap dalam Bahasa Indonesia yang jelas, spesifik, dan dapat langsung dipakai tim engineering dan desain.",
-  "",
-  "Aturan wajib:",
-  "1. Gunakan tepat bagian berikut, berurutan, masing-masing sebagai heading '## ' dengan nama persis:",
-  ...PRD_SECTIONS.map((t, i) => `   ${i + 1}. ## ${t}`),
-  "2. Awali dokumen dengan heading '# ' berisi judul produk, lalu satu paragraf status (Draf v1.0, tanggal tidak perlu).",
-  "3. Tujuan harus terukur: beri target angka dan batas waktu. Contoh: 'Waktu buat PRD di bawah 2 menit untuk 90% pengguna'.",
-  "4. Cerita pengguna memakai format 'Sebagai <peran>, saya ingin <tujuan> agar <manfaat>', diikuti kriteria penerimaan Given/When/Then.",
-  "5. Beri ID tetap: FR-001, NFR-001, US-001, R-001, Q-001. Kebutuhan fungsional dan non-fungsional ditulis sebagai tabel dengan kolom ID, Deskripsi, Prioritas (P0/P1/P2), dan Kriteria Penerimaan.",
-  "6. Prioritas memakai MoSCoW atau P0/P1/P2 dengan konsisten. P0 berarti wajib untuk rilis pertama.",
-  "7. Non-fungsional wajib mencakup performa, keamanan dan privasi data, aksesibilitas, dan kompatibilitas perangkat, masing-masing dengan angka bila memungkinkan.",
-  "8. Rekomendasi stack harus disertai alasan singkat dan alternatif. Pilih teknologi yang sederhana untuk ruang lingkup yang diminta.",
-  "9. Jika deskripsi kurang lengkap, jangan mengarang fakta. Tulis asumsi eksplisit di bagian Asumsi dan Dependensi, dan ajukan pertanyaan terbuka di bagian Pertanyaan Terbuka.",
-  "10. Bagian Daftar Tugas berisi checklist Markdown, satu tugas per baris, dengan format persis: '- [ ] T-001 [P0] Judul tugas singkat (FR-001)'. Urutkan dari fondasi ke fitur, dan kaitkan setiap tugas dengan FR/NFR terkait.",
-  "11. Gunakan Markdown: heading, tabel, dan daftar. Hindari kalimat pembuka basa-basi dan penutup. Mulai langsung dari judul.",
-].join("\n");
+export const PRD_SECTIONS_EN_ARR = [
+  "Executive Summary",
+  "Background and Problem",
+  "Goals and Success Metrics",
+  "Out of Scope",
+  "Users and Personas",
+  "User Stories and Acceptance Criteria",
+  "Functional Requirements",
+  "Non-Functional Requirements",
+  "Key User Flows",
+  "Data Model",
+  "Tech Stack Recommendation",
+  "Assumptions and Dependencies",
+  "Risks and Mitigations",
+  "Open Questions",
+  "Release Plan",
+  "Task Checklist",
+] as const;
+
+// Bahasa Indonesia template — kept as the default export for compatibility.
+export const PRD_SECTIONS = PRD_SECTIONS_ID;
+
+const SYSTEM_PROMPTS: Record<Lang, string> = {
+  id: [
+    "Anda adalah product manager senior dan penulis PRD berpengalaman.",
+    "Tulis PRD lengkap dalam Bahasa Indonesia yang jelas, spesifik, dan dapat langsung dipakai tim engineering dan desain.",
+    "",
+    "Aturan wajib:",
+    "1. Gunakan tepat bagian berikut, berurutan, masing-masing sebagai heading '## ' dengan nama persis:",
+    ...PRD_SECTIONS_ID.map((s, i) => `   ${i + 1}. ## ${s}`),
+    "2. Awali dokumen dengan heading '# ' berisi judul produk, lalu satu paragraf status (Draf v1.0, tanggal tidak perlu).",
+    "3. Tujuan harus terukur: beri target angka dan batas waktu. Contoh: 'Waktu buat PRD di bawah 2 menit untuk 90% pengguna'.",
+    "4. Cerita pengguna memakai format 'Sebagai <peran>, saya ingin <tujuan> agar <manfaat>', diikuti kriteria penerimaan Given/When/Then.",
+    "5. Beri ID tetap: FR-001, NFR-001, US-001, R-001, Q-001. Kebutuhan fungsional dan non-fungsional ditulis sebagai tabel dengan kolom ID, Deskripsi, Prioritas (P0/P1/P2), dan Kriteria Penerimaan.",
+    "6. Prioritas memakai MoSCoW atau P0/P1/P2 dengan konsisten. P0 berarti wajib untuk rilis pertama.",
+    "7. Non-fungsional wajib mencakup performa, keamanan dan privasi data, aksesibilitas, dan kompatibilitas perangkat, masing-masing dengan angka bila memungkinkan.",
+    "8. Rekomendasi stack harus disertai alasan singkat dan alternatif. Pilih teknologi yang sederhana untuk ruang lingkup yang diminta.",
+    "9. Jika deskripsi kurang lengkap, jangan mengarang fakta. Tulis asumsi eksplisit di bagian Asumsi dan Dependensi, dan ajukan pertanyaan terbuka di bagian Pertanyaan Terbuka.",
+    "10. Bagian Daftar Tugas berisi checklist Markdown, satu tugas per baris, dengan format persis: '- [ ] T-001 [P0] Judul tugas singkat (FR-001)'. Urutkan dari fondasi ke fitur, dan kaitkan setiap tugas dengan FR/NFR terkait.",
+    "11. Gunakan Markdown: heading, tabel, dan daftar. Hindari kalimat pembuka basa-basi dan penutup. Mulai langsung dari judul.",
+  ].join("\n"),
+  en: [
+    "You are a senior product manager and experienced PRD author.",
+    "Write a complete PRD in clear, specific English that the engineering and design team can use directly.",
+    "",
+    "Mandatory rules:",
+    "1. Use exactly the following sections, in order, each as a '## ' heading with the exact name:",
+    ...PRD_SECTIONS_EN_ARR.map((s, i) => `   ${i + 1}. ## ${s}`),
+    "2. Start the document with a '# ' heading containing the product name, then one status paragraph (Draft v1.0; no date needed).",
+    "3. Goals must be measurable: give numeric targets and deadlines. Example: 'PRD creation time under 2 minutes for 90% of users'.",
+    "4. User stories use the format 'As a <role>, I want <goal> so that <benefit>', followed by Given/When/Then acceptance criteria.",
+    "5. Use stable IDs: FR-001, NFR-001, US-001, R-001, Q-001. Functional and non-functional requirements are written as tables with the columns ID, Description, Priority (P0/P1/P2), and Acceptance Criteria.",
+    "6. Priorities use MoSCoW or P0/P1/P2 consistently. P0 means required for the first release.",
+    "7. Non-functional requirements must cover performance, security and data privacy, accessibility, and device compatibility, each with numbers where possible.",
+    "8. Stack recommendations must include a short rationale and alternatives. Choose technologies that are simple for the requested scope.",
+    "9. If the description is incomplete, do not invent facts. State explicit assumptions in the Assumptions and Dependencies section, and raise open questions in the Open Questions section.",
+    "10. The Task Checklist section contains a Markdown checklist, one task per line, in the exact format: '- [ ] T-001 [P0] Short task title (FR-001)'. Order from foundation to features, and link each task to its related FR/NFR.",
+    "11. Use Markdown: headings, tables, and lists. Avoid filler openers and closers. Start directly with the title.",
+  ].join("\n"),
+};
+
+export function systemPrompt(lang: Lang = getLang()): string {
+  return SYSTEM_PROMPTS[lang];
+}
+
+// Back-compat export (Bahasa Indonesia template).
+export const SYSTEM_PROMPT = SYSTEM_PROMPTS.id;
 
 export interface RequestSpec {
   url: string;
@@ -146,7 +199,7 @@ export function buildRequest(opts: {
       url: `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:${method}`,
       headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        systemInstruction: { parts: [{ text: systemPrompt() }] },
         contents: [{ role: "user", parts: [{ text: userText }] }],
         generationConfig: maxTokens ? { maxOutputTokens: maxTokens } : { temperature: 0.4 },
       }),
@@ -162,7 +215,7 @@ export function buildRequest(opts: {
     body: JSON.stringify({
       model,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: systemPrompt() },
         { role: "user", content: userText },
       ],
       stream,
@@ -209,7 +262,7 @@ export function streamError(event: string): string | null {
     try {
       const json = JSON.parse(line.slice(5).trim());
       const e = json?.error;
-      if (e) return typeof e === "string" ? e : e.message ?? "Penyedia AI menghentikan respons.";
+      if (e) return typeof e === "string" ? e : e.message ?? t("err.streamPlain");
     } catch {
       // not JSON
     }
@@ -228,7 +281,7 @@ export function parseSseEvent(event: string): string[] {
   return texts;
 }
 
-// Turns any provider error body into a clear Indonesian message.
+// Turns any provider error body into a clear message in the current UI language.
 export function describeError(status: number, body: string): string {
   let providerMsg = "";
   try {
@@ -239,15 +292,12 @@ export function describeError(status: number, body: string): string {
     providerMsg = body.slice(0, 200);
   }
   const detail = providerMsg ? ` (${providerMsg.slice(0, 160)})` : "";
-  if (status === 400) return `Permintaan ditolak penyedia${detail}.`;
-  if (status === 401 || status === 403)
-    return `API key tidak valid atau tidak punya akses ke model ini${detail}. Periksa kunci di Pengaturan.`;
-  if (status === 404)
-    return `Model tidak ditemukan atau tidak tersedia untuk akun ini${detail}. Pilih model lain di Pengaturan.`;
-  if (status === 429)
-    return `Batas gratis tercapai (rate limit)${detail}. Tunggu beberapa menit lalu coba lagi, atau pilih model lain.`;
-  if (status >= 500) return `Penyedia AI sedang bermasalah (${status}). Coba lagi sebentar lagi.`;
-  return `Gagal memanggil AI (${status})${detail}.`;
+  if (status === 400) return t("err.400", { detail });
+  if (status === 401 || status === 403) return t("err.401", { detail });
+  if (status === 404) return t("err.404", { detail });
+  if (status === 429) return t("err.429", { detail });
+  if (status >= 500) return t("err.5xx", { status: String(status) });
+  return t("err.other", { status: String(status), detail });
 }
 
 // Repairs settings saved by older versions (retired/paid model IDs, removed providers).

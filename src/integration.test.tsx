@@ -7,7 +7,7 @@ import { generatePrd } from "./lib/ai";
 
 vi.mock("./lib/ai", () => ({
   generatePrd: vi.fn((opts: any) => {
-    opts.onChunk("## Ringkasan\n");
+    opts.onChunk("## Summary\n");
     opts.onComplete();
     return { abort: vi.fn(), promise: Promise.resolve() };
   }),
@@ -60,24 +60,24 @@ describe("integration: happy path", () => {
     renderApp();
 
     // 2. Landing hero heading visible
-    expect(screen.getByText("Bikin PRD dalam hitungan detik")).toBeDefined();
+    expect(screen.getByText("Create a PRD in seconds")).toBeDefined();
 
-    // 3. Click link to /settings (Header "Pengaturan")
+    // 3. Click link to /settings (Header "Settings")
     act(() => {
-      fireEvent.click(screen.getByRole("link", { name: /pengaturan/i }));
+      fireEvent.click(screen.getByRole("link", { name: /^settings$/i }));
     });
     expect(screen.getByTestId("current-path").textContent).toBe("/settings");
-    expect(screen.getByText("Pengaturan AI")).toBeDefined();
+    expect(screen.getByText("AI Settings")).toBeDefined();
 
     // 4. Select provider, type API key, pick model, click Save
     const providerSelect = screen.getAllByRole("combobox")[0];
     fireEvent.change(providerSelect, { target: { value: "gemini" } });
-    const apiKeyInput = screen.getByPlaceholderText("Masukkan API Key");
+    const apiKeyInput = screen.getByPlaceholderText("Enter API key");
     fireEvent.change(apiKeyInput, { target: { value: "test-key-123" } });
     const modelSelect = screen.getAllByRole("combobox")[1];
     fireEvent.change(modelSelect, { target: { value: "gemini-3.8-flash" } });
     act(() => {
-      fireEvent.click(screen.getByRole("button", { name: /Simpan Pengaturan/i }));
+      fireEvent.click(screen.getByRole("button", { name: /save settings/i }));
     });
 
     // 5. Settings persisted to the default Zustand store
@@ -93,43 +93,43 @@ describe("integration: happy path", () => {
     });
     expect(screen.getByTestId("current-path").textContent).toBe("/prd/create");
 
-    // 7. generatePrd is mocked: onChunk("## Ringkasan\n") then onComplete() sync
+    // 7. generatePrd is mocked: onChunk("## Summary\n") then onComplete() sync
 
     // 8. Fill title and brief, click Generate
-    fireEvent.change(screen.getByPlaceholderText(/contoh:/i), {
-      target: { value: "PRD Uji" },
+    fireEvent.change(screen.getByPlaceholderText(/e\.g\./i), {
+      target: { value: "Test PRD" },
     });
-    fireEvent.change(screen.getByPlaceholderText(/mengatur tugas/i), {
-      target: { value: "Aplikasi tes" },
+    fireEvent.change(screen.getByPlaceholderText(/daily tasks/i), {
+      target: { value: "Test app" },
     });
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /buat prd dengan ai/i }));
+      fireEvent.click(screen.getByRole("button", { name: /create prd with ai/i }));
     });
 
-    // 9. Navigated to /prd/:id and content shows "## Ringkasan"
+    // 9. Navigated to /prd/:id and content shows "## Summary"
     expect(screen.getByTestId("current-path").textContent).toMatch(/^\/prd\//);
     expect(mockGeneratePrd).toHaveBeenCalledTimes(1);
     const opts = mockGeneratePrd.mock.calls[0][0];
-    expect(opts.brief).toContain("PRD Uji");
-    expect(opts.brief).toContain("Aplikasi tes");
-    expect(screen.getByRole("heading", { name: "Ringkasan" })).toBeDefined();
+    expect(opts.brief).toContain("Test PRD");
+    expect(opts.brief).toContain("Test app");
+    expect(screen.getByRole("heading", { name: "Summary" })).toBeDefined();
 
     const prdId = useStore.getState().prds[0]!.id;
 
-    // 10. Click editor's "Kembali ke Tugas" link to /tasks/:prdId
+    // 10. Click editor's "Back to tasks" link to /tasks/:prdId
     act(() => {
-      fireEvent.click(screen.getByRole("button", { name: /kembali ke tugas/i }));
+      fireEvent.click(screen.getByRole("button", { name: /back to tasks/i }));
     });
     expect(screen.getByTestId("current-path").textContent).toBe(`/tasks/${prdId}`);
 
     // 11. ProgressBar renders and a task can be added
     expect(screen.getByText("0%")).toBeDefined();
-    const taskInput = screen.getByPlaceholderText(/tambah tugas baru/i);
+    const taskInput = screen.getByPlaceholderText(/add a new task/i);
     act(() => {
       fireEvent.change(taskInput, { target: { value: "Tugas Uji" } });
     });
     act(() => {
-      fireEvent.click(screen.getByRole("button", { name: /tambah/i }));
+      fireEvent.click(screen.getByRole("button", { name: /^add$/i }));
     });
     expect(screen.getByText("Tugas Uji")).toBeDefined();
     expect(useStore.getState().prds[0]!.tasks).toHaveLength(1);

@@ -1,6 +1,13 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Class-based dark mode: .dark on <html>, set by src/theme.ts */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+}
+
 /* Prose tuned to document tokens: ink headings, muted body, stamp links */
 @theme {
   --color-primary: #bf3b1e;
@@ -23,6 +30,27 @@
   --radius-lg: 0.75rem;
   --font-sans: "Outfit Variable", "Outfit", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Dark theme: override semantic tokens; utilities (bg-card, text-ink…) follow automatically.
+   Palette: zinc scale — paper zinc-950, card zinc-900, line zinc-800, ink inverted. */
+.dark {
+  color-scheme: dark;
+  --color-paper: #0a0a0b;
+  --color-card: #18181b;
+  --color-ink: #fafafa;
+  --color-ink-soft: #d4d4d8;
+  --color-muted: #a1a1aa;
+  --color-line: #27272a;
+  --color-surface: #0a0a0b;
+  --color-danger: #f87171;
+  --color-stamp: #e0552f;
+  --color-stamp-dark: #c74824;
+}
+
+.dark ::selection {
+  background: #e0552f;
+  color: #ffffff;
 }
 
 body {

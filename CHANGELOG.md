@@ -8,11 +8,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Dark mode
 - PWA (offline-ready, installable)
 - Standalone task-list generator
 - AI design tools (original scope beyond PRD)
 - Multi-model chat for PRD iteration
+
+## [0.3.0] - 2026-11-17
+
+### Added
+- **Light / Dark / System theme.** Semantic tokens get dark values under a
+  `.dark` class on `<html>`; a pre-paint inline script in `index.html` prevents
+  dark-mode flash; "system" follows the OS `prefers-color-scheme` live. Header
+  gets a theme cycle button (sun/moon/monitor) and the browser theme-color meta
+  follows the resolved theme.
+- **Bilingual UI: English (default) and Bahasa Indonesia.** Lightweight typed
+  dictionary (`src/i18n/`) with a singleton `t()` so lib code translates too;
+  header language toggle; `html[lang]` syncs; dates follow the UI locale; the
+  generated PRD is written in the UI language (separate ID/EN system prompts).
+  Settings page and provider copy fully translated in both languages.
+
+### Fixed
+- **Mobile layout.** Landing stamp seal no longer covers the card meta at 375px;
+  modal scrolls on small viewports with a larger close target; markdown tables
+  scroll horizontally; checkboxes enlarged; delete/reveal buttons got bigger
+  touch targets; add-task form stacks vertically on phones.
+- `color-scheme` declared per theme, so native selects/scrollbars match dark mode.
+
+### Changed
+- Default UI language is now English; Indonesian remains fully supported
+  (switch via the header toggle).
 
 ## [0.2.0] - 2026-11-17
 

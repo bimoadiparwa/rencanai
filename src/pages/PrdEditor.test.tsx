@@ -62,7 +62,7 @@ describe("PrdEditor", () => {
     });
     renderPrdEditor();
     act(() => {
-      fireEvent.click(screen.getByRole("button", { name: /hapus prd/i }));
+      fireEvent.click(screen.getByRole("button", { name: /delete prd/i }));
     });
     expect(screen.getByTestId("current-path").textContent).toBe("/dashboard");
   });

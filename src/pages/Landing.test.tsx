@@ -28,7 +28,7 @@ describe("Landing", () => {
         <Landing />
       </MemoryRouter>
     );
-    expect(screen.getByText("Bikin PRD dalam hitungan detik")).toBeDefined();
+    expect(screen.getByText("Create a PRD in seconds")).toBeDefined();
   });
 
   it("CTA navigates to /dashboard", () => {
@@ -38,7 +38,7 @@ describe("Landing", () => {
         <LocationProbe />
       </MemoryRouter>
     );
-    const cta = screen.getByRole("button", { name: /mulai buat prd/i });
+    const cta = screen.getByRole("button", { name: /start your prd/i });
     act(() => fireEvent.click(cta));
     expect(screen.getByTestId("current-path").textContent).toBe("/dashboard");
   });

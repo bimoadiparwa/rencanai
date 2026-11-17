@@ -9,8 +9,10 @@ import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { Card } from "../components/ui/Card";
+import { useLang } from "../i18n";
 
 export default function PrdCreate() {
+  const { t } = useLang();
   const navigate = useNavigate();
   const rawSettings = useStore((s) => s.settings);
   const addPrd = useStore((s) => s.addPrd);
@@ -67,22 +69,22 @@ export default function PrdCreate() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">generator</p>
+      <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">{t("create.eyebrow")}</p>
 
       {!ready ? (
         <Card className="mb-6 border-dashed">
-          <Badge variant="muted">Perlu API Key</Badge>
+          <Badge variant="muted">{t("create.needBadge")}</Badge>
           <h1 className="mt-2 text-xl font-semibold tracking-tight text-ink">
-            Konfigurasi AI terlebih dahulu
+            {t("create.needTitle")}
           </h1>
           <p className="mt-1 text-sm text-muted">
-            Masukkan API Key Anda di halaman Settings sebelum membuat PRD.
+            {t("create.needDesc")}
           </p>
           <Link
             to="/settings"
             className="mt-4 inline-block text-sm text-ink-soft underline decoration-line underline-offset-4 transition-colors hover:text-stamp hover:decoration-stamp"
           >
-            Buka Pengaturan
+            {t("create.openSettings")}
           </Link>
         </Card>
       ) : (
@@ -95,7 +97,7 @@ export default function PrdCreate() {
             to="/settings"
             className="text-sm text-muted underline decoration-line underline-offset-4 transition-colors hover:text-stamp"
           >
-            Ubah di Pengaturan
+            {t("create.changeSettings")}
           </Link>
         </div>
       )}
@@ -103,22 +105,22 @@ export default function PrdCreate() {
       <form onSubmit={handleGenerate} className="space-y-5">
         <div>
           <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-muted">
-            Judul Proyek
+            {t("create.titleLabel")}
           </label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Contoh: Aplikasi Manajemen Tugas"
+            placeholder={t("create.titlePh")}
           />
         </div>
         <div>
           <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-muted">
-            Deskripsi Singkat
+            {t("create.briefLabel")}
           </label>
           <Input
             value={brief}
             onChange={(e) => setBrief(e.target.value)}
-            placeholder="Aplikasi untuk mengatur tugas harian tim…"
+            placeholder={t("create.briefPh")}
             className="h-32"
           />
         </div>
@@ -129,29 +131,29 @@ export default function PrdCreate() {
               to="/settings"
               className="mt-1.5 inline-block text-sm text-danger underline underline-offset-4 hover:opacity-80"
             >
-              Perbaiki di Settings
+              {t("create.fixSettings")}
             </Link>
           </div>
         )}
         <div className="flex items-center gap-3 pt-1">
           <Button type="submit" variant="primary" disabled={!ready || generating || !title.trim() || !brief.trim()}>
-            {generating ? "Menghasilkan PRD…" : "Buat PRD dengan AI"}
+            {generating ? t("create.generating") : t("create.submit")}
           </Button>
           {generating && abortCtrl && (
             <Button type="button" variant="danger" onClick={() => abortCtrl.abort()}>
-              Batal
+              {t("create.cancel")}
             </Button>
           )}
         </div>
       </form>
 
       <div className="mt-10 border-t border-line pt-6">
-        <h3 className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">Hasil PRD</h3>
+        <h3 className="mb-3 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">{t("create.resultTitle")}</h3>
         <div
           data-testid="prd-content"
           className="h-64 overflow-y-auto rounded-md border border-line bg-card p-4 font-mono text-[13px] leading-relaxed whitespace-pre-wrap text-ink-soft"
         >
-          {content || (generating ? "" : "Hasil PRD akan muncul di sini saat dibuat.")}
+          {content || (generating ? "" : t("create.resultEmpty"))}
         </div>
       </div>
     </div>

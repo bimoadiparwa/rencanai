@@ -9,7 +9,7 @@ export function Badge({
     default: "border border-ink/25 text-ink-soft bg-transparent",
     primary: "bg-stamp text-white border border-transparent",
     muted: "bg-line/70 text-muted border border-transparent",
-    danger: "bg-danger text-white border border-transparent",
+    danger: "bg-danger/15 text-danger border border-danger/30 dark:bg-danger/15 dark:text-danger dark:border-danger/30",
   };
   return (
     <span

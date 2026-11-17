@@ -52,15 +52,15 @@ function createPrd(overrides: Partial<Prd> = {}): Prd {
 describe("Dashboard", () => {
   it("renders empty state when no prds", () => {
     renderDashboard();
-    expect(screen.getByText("Belum ada PRD")).toBeDefined();
-    expect(screen.getByText("Buat PRD pertama Anda dengan AI — gratis.")).toBeDefined();
-    expect(screen.getAllByText(/buat prd baru/i)).toHaveLength(2);
+    expect(screen.getByText("No PRDs yet")).toBeDefined();
+    expect(screen.getByText("Create your first PRD with AI — free.")).toBeDefined();
+    expect(screen.getAllByText(/new prd/i)).toHaveLength(2);
   });
 
   it("renders list items when prds exist", () => {
     const prd = createPrd({ updatedAt: Date.now() });
     useStore.getState().addPrd(prd);
-    const updatedAtText = new Date(prd.updatedAt).toLocaleDateString("id-ID");
+    const updatedAtText = new Date(prd.updatedAt).toLocaleDateString("en-US");
     renderDashboard();
     expect(screen.getByText("Judul PRD")).toBeDefined();
     expect(screen.getByText(updatedAtText)).toBeDefined();
@@ -74,10 +74,10 @@ describe("Dashboard", () => {
     expect(screen.getByTestId("current-path").textContent).toBe("/prd/prd-abc");
   });
 
-  it("top-right Buat PRD Baru navigates to /prd/create", () => {
+  it("top-right New PRD navigates to /prd/create", () => {
     useStore.getState().addPrd(createPrd());
     renderDashboard();
-    act(() => fireEvent.click(screen.getByRole("button", { name: /buat prd baru/i })));
+    act(() => fireEvent.click(screen.getByRole("button", { name: /new prd/i })));
     expect(screen.getByTestId("current-path").textContent).toBe("/prd/create");
   });
 });

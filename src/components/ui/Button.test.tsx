@@ -13,7 +13,7 @@ describe("Button", () => {
   it("shows loading state and disables click", () => {
     const onClick = vi.fn();
     render(<Button loading onClick={onClick}>Simpan</Button>);
-    const btn = screen.getByRole("button", { name: /memuat/i }) as HTMLButtonElement;
+    const btn = screen.getByRole("button", { name: /loading/i }) as HTMLButtonElement;
     expect(btn.disabled).toBe(true);
     fireEvent.click(btn);
     expect(onClick).not.toHaveBeenCalled();
