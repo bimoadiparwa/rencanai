@@ -7,6 +7,7 @@ import PrdCreate from "./pages/PrdCreate";
 import PrdEditor from "./pages/PrdEditor";
 import Tasks from "./pages/Tasks";
 import Settings from "./pages/Settings";
+import KeyGuard from "./components/layout/KeyGuard";
 import { useStore } from "./store/useStore";
 import { applyTheme, watchSystemTheme } from "./theme";
 
@@ -23,7 +24,7 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Landing />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/prd/create" element={<PrdCreate />} />
+        <Route path="/prd/create" element={<KeyGuard><PrdCreate /></KeyGuard>} />
         <Route path="/prd/:id" element={<PrdEditor />} />
         <Route path="/tasks/:prdId" element={<Tasks />} />
         <Route path="/settings" element={<Settings />} />

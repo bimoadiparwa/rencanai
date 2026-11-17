@@ -109,6 +109,9 @@ export const en = {
   "settings.title": "AI Settings",
   "settings.privacy":
     "Your API key is stored only in your browser and is never sent to our servers.",
+  "settings.storageWarning":
+    "Warning: your API key is stored in plaintext in browser localStorage (BYOK). Not encrypted — don't use production-sensitive keys.",
+  "settings.byokNote": "You bring the key — we never see it.",
   "settings.provider": "Provider",
   "settings.getKey": "Get a key",
   "settings.keyLabel": "API key",
@@ -169,11 +172,13 @@ export const en = {
   "err.noText": "The AI provider returned no text. Try another model in Settings.",
   "err.network":
     "Cannot connect to the AI provider. Check your internet connection and try again.",
+  "err.timeout": "Request timed out. Try again or pick another model.",
   "err.unexpected": "An unexpected error occurred.",
   "err.saveFailed": "Failed to save the PRD.",
   "conn.ok": "Key valid. Model {{model}} responded.",
   "conn.okNoText": "Key valid. Model {{model}} responded (no text in the short test).",
   "conn.network": "Cannot connect to the AI provider. Check your internet connection.",
+  "conn.timeout": "Connection timed out. Try again or pick another model.",
   "conn.fail": "Connection test failed.",
 };
 

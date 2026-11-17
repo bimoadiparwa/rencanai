@@ -102,6 +102,9 @@ export const id: Dict = {
   "settings.title": "Pengaturan AI",
   "settings.privacy":
     "Kunci API disimpan hanya di browser Anda dan tidak pernah dikirim ke server kami.",
+  "settings.storageWarning":
+    "Peringatan: API key disimpan plaintext di localStorage browser (BYOK). Tidak dienkripsi — jangan gunakan kunci produksi sensitif.",
+  "settings.byokNote": "Anda bawa kunci sendiri — kami tidak pernah melihatnya.",
   "settings.provider": "Penyedia",
   "settings.getKey": "Dapatkan kunci",
   "settings.keyLabel": "API key",
@@ -160,10 +163,12 @@ export const id: Dict = {
   "err.noText": "Penyedia AI tidak mengembalikan teks. Coba model lain di Pengaturan.",
   "err.network":
     "Tidak dapat terhubung ke penyedia AI. Periksa koneksi internet dan coba lagi.",
+  "err.timeout": "Permintaan waktu habis. Coba lagi atau pilih model lain.",
   "err.unexpected": "Terjadi kesalahan tak terduga.",
   "err.saveFailed": "Gagal menyimpan PRD.",
   "conn.ok": "Kunci valid. Model {{model}} merespons.",
   "conn.okNoText": "Kunci valid. Model {{model}} merespons (tanpa teks pada tes singkat).",
   "conn.network": "Tidak dapat terhubung ke penyedia AI. Periksa koneksi internet.",
+  "conn.timeout": "Koneksi waktu habis. Coba lagi atau pilih model lain.",
   "conn.fail": "Gagal menguji koneksi.",
 };

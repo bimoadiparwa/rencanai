@@ -102,6 +102,9 @@ export default function Settings() {
       <p className="mt-2 max-w-[52ch] text-sm leading-relaxed text-muted">
         {t("settings.privacy")}
       </p>
+      <div className="mt-4 rounded-md border border-amber-200/50 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900 dark:border-amber-900/30 dark:bg-amber-900/10 dark:text-amber-200">
+        {t("settings.storageWarning")}
+      </div>
 
       <Card className="mt-6 space-y-5">
         <Select value={provider} onChange={handleProviderChange} options={PROVIDERS.map((p) => ({ label: p.label, value: p.id }))} label={t("settings.provider")} />

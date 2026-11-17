@@ -12,6 +12,8 @@ export async function testConnection(
   apiKey: string,
   model: string
 ): Promise<ConnectionResult> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
   try {
     const spec = buildRequest({
       provider,
@@ -21,7 +23,12 @@ export async function testConnection(
       stream: false,
       maxTokens: 512,
     });
-    const res = await fetch(spec.url, { method: "POST", headers: spec.headers, body: spec.body });
+    const res = await fetch(spec.url, {
+      method: "POST",
+      headers: spec.headers,
+      body: spec.body,
+      signal: controller.signal,
+    });
     if (!res.ok) {
       return { ok: false, message: describeError(res.status, await res.text()) };
     }
@@ -32,6 +39,9 @@ export async function testConnection(
     }
     return { ok: true, message: t("conn.ok", { model }) };
   } catch (err) {
+    if (controller.signal.aborted) {
+      return { ok: false, message: t("conn.timeout") };
+    }
     const network = err instanceof TypeError;
     return {
       ok: false,
@@ -41,5 +51,7 @@ export async function testConnection(
           ? err.message
           : t("conn.fail"),
     };
+  } finally {
+    clearTimeout(timeout);
   }
 }

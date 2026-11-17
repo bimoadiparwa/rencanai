@@ -1,5 +1,6 @@
 import { makeId } from "../lib/id";
 import { extractTasks } from "../lib/prd";
+import { sanitizeMarkdown } from "../lib/sanitize";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useStore } from "../store/useStore";
@@ -52,7 +53,7 @@ export default function PrdCreate() {
           id,
           title,
           description: brief,
-          content: accumulated,
+          content: sanitizeMarkdown(accumulated),
           tasks: extractTasks(accumulated),
           createdAt: Date.now(),
           updatedAt: Date.now(),
