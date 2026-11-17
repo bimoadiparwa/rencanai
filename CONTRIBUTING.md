@@ -26,9 +26,10 @@ Terima kasih mau berkontribusi! 🙌 Panduan ini singkat — baca dulu, lalu kir
 
 - **TypeScript strict** — tidak ada `any` baru kecuali di tempat yang sudah ada dan beralasan.
 - **Conventional Commits** — `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`.
-- **Test adalah kontrak.** Test component mengecek string/role/placeholder Indonesia yang persis (mis. `"Buat PRD dengan AI"`, `"Masukkan API Key"`, `data-testid="prd-content"`). Jangan mengubah teks UI tanpa ikut memperbarui test yang mengeceknya.
+- **Test adalah kontrak.** Test component mengecek string/role/placeholder yang persis (mis. `"Create PRD with AI"`, `"Enter API key"`, `data-testid="prd-content"`). Jangan mengubah teks UI tanpa ikut memperbarui test yang mengeceknya.
 - **Satu sumber kebenaran** untuk katalog provider/model: `src/lib/providers.ts`. Jangan menyalin daftar model ke halaman lain.
-- Semua teks UI dalam **Bahasa Indonesia**, termasuk pesan error (`src/lib/providers.ts` → `describeError`).
+- **Sanitasi output AI** sebelum render/simpan: konten PRD melewati `rehype-sanitize` di `Markdown.tsx` dan `lib/sanitize.ts` sebelum masuk `localStorage`. Jangan menambahkan jalur render konten baru tanpa melewati sink sanitasi yang sama.
+- Teks UI dwibahasa: **English default / Bahasa Indonesia** via `src/i18n/`. Pesan error di `src/lib/providers.ts` → `describeError` diterjemahkan ke kedua bahasa.
 
 ## Area yang Sering Perlu Diperbarui
 

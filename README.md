@@ -119,8 +119,10 @@ Panggilan AI berlangsung **langsung dari browser ke provider** (Gemini / OpenRou
 
 ## Privasi & Keamanan
 
-- API key disimpan di `localStorage` browser Anda, tidak pernah dikirim ke mana pun selain penyedia AI yang Anda pilih.
-- Tidak ada server, database, analytics, atau pelacakan.
+- **API key disimpan di `localStorage` browser Anda (plaintext), tidak pernah dikirim ke mana pun selain penyedia AI yang Anda pilih.** Ada tombol "Hapus semua data" di Pengaturan untuk menghapus kunci + PRD kapan saja. Kunci tidak dienkripsi di browser — jangan gunakan kunci produksi sensitif.
+- Tidak ada server, database, analytics, atau pelacakan. Semua panggilan AI berlangsung langsung dari browser ke provider yang Anda pilih.
+- **Konten PRD di-sanitasi sebelum dirender dan disimpan** (`rehype-sanitize`), sehingga output model tidak dapat mengeksekusi skrip di dalam aplikasi.
+- **Content-Security-Policy** aktif (`frame-ancestors 'none'`, `connect-src` terbatas pada endpoint provider) mencegah clickjacking dan exfil data.
 - Ekspor/import JSON untuk memindahkan data antar browser/perangkat.
 - Aplikasi disajikan via HTTPS di GitHub Pages. Jika Anda meng-host sendiri di HTTP non-localhost, fitur tetap bekerja (UUID dengan fallback aman), namun HTTPS selalu disarankan.
 
@@ -151,7 +153,7 @@ Panggilan AI berlangsung **langsung dari browser ke provider** (Gemini / OpenRou
 - Kuota free tier provider berlaku — PRD panjang bisa memakan kuota cepat.
 - Anthropic tidak didukung (tidak memiliki free tier).
 - Data hanya di browser aktif — bersihkan data browser = hilang; gunakan Ekspor JSON untuk cadangan.
-- Mode gelap belum tersedia (dirancang sebagai tema terang "technical document").
+- Mode gelap tersedia (terang / gelap / sistem, mengikuti OS).
 
 ## Roadmap
 

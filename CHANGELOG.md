@@ -17,17 +17,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Light / Dark / System theme.** Semantic tokens get dark values under a
-  `.dark` class on `<html>`; a pre-paint inline script in `index.html` prevents
-  dark-mode flash; "system" follows the OS `prefers-color-scheme` live. Header
-  gets a theme cycle button (sun/moon/monitor) and the browser theme-color meta
-  follows the resolved theme.
+  `.dark` class on `<html>`; a pre-paint inline script prevents dark-mode flash;
+  "system" follows the OS `prefers-color-scheme` live. Header gets a theme cycle
+  button (sun/moon/monitor) and the browser theme-color meta follows the resolved
+  theme.
 - **Bilingual UI: English (default) and Bahasa Indonesia.** Lightweight typed
   dictionary (`src/i18n/`) with a singleton `t()` so lib code translates too;
   header language toggle; `html[lang]` syncs; dates follow the UI locale; the
   generated PRD is written in the UI language (separate ID/EN system prompts).
   Settings page and provider copy fully translated in both languages.
+- **Stored-XSS defense.** `rehype-sanitize` added to the Markdown render sink
+  (`Markdown.tsx`) so AI-generated PRD content never reaches the DOM unsanitized.
+  `lib/sanitize.ts` strips `<script>`, `on*` handlers, and `javascript:`/`vbscript:`
+  /`data:` URLs before content is persisted to `localStorage` (`PrdCreate.tsx`),
+  closing the stored-XSS → API-key-exfiltration chain.
+- **Clear all data** button in Settings (confirm → wipe store → navigate to
+  Landing) so users can delete plaintext keys + PRDs at any time.
+- **Fetch timeouts.** 30s on `generatePrd`, 15s on `testConnection`, each with its
+  own `AbortController`, so stalled provider streams can't hang the app.
 
 ### Fixed
+- **Stored XSS chain.** Raw AI markdown no longer reaches the DOM unsanitized;
+  `PrdEditor` and the `PrdCreate` preview render through `rehype-sanitize`.
 - **Mobile layout.** Landing stamp seal no longer covers the card meta at 375px;
   modal scrolls on small viewports with a larger close target; markdown tables
   scroll horizontally; checkboxes enlarged; delete/reveal buttons got bigger
@@ -37,6 +48,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Default UI language is now English; Indonesian remains fully supported
   (switch via the header toggle).
+- GitHub Pages now serves a Content-Security-Policy meta tag
+  (`frame-ancestors 'none'`, provider-limited `connect-src`, `script-src 'self'`);
+  the inline FOUC script was externalized to `theme.js` with schema validation so a
+  corrupted `localStorage` store can't break pre-hydration.
 
 ## [0.2.0] - 2026-11-17
 
@@ -97,5 +112,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the reference site (`docs/superpowers/specs/`).
 
 [Unreleased]: https://github.com/bimoadiparwa/rencanai/compare/v0.2.0...HEAD
+[0.3.0]: https://github.com/bimoadiparwa/rencanai/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/bimoadiparwa/rencanai/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/bimoadiparwa/rencanai/releases/tag/v0.1.0
