@@ -125,6 +125,9 @@ export const en = {
   "settings.backup": "Backup data",
   "settings.export": "Export all PRDs (JSON)",
   "settings.import": "Import JSON",
+  "settings.clearData": "Clear all data",
+  "settings.clearConfirm": "Are you sure you want to delete all PRDs and settings? This cannot be undone.",
+  "settings.cleared": "All data cleared.",
 
   // Provider copy
   "prov.gemini.hint": "Key from Google AI Studio",

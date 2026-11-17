@@ -118,6 +118,9 @@ export const id: Dict = {
   "settings.backup": "Cadangkan Data",
   "settings.export": "Ekspor Semua PRD (JSON)",
   "settings.import": "Impor JSON",
+  "settings.clearData": "Hapus semua data",
+  "settings.clearConfirm": "Yakin ingin menghapus semua PRD dan pengaturan? Tindakan tidak dapat dibatalkan.",
+  "settings.cleared": "Semua data dihapus.",
 
   "prov.gemini.hint": "Kunci dari Google AI Studio",
   "prov.gemini.note": "Free tier tanpa kartu kredit, batas harian berlaku.",

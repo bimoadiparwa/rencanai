@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useStore } from "../store/useStore";
 import { Input } from "../components/ui/Input";
 import { Select } from "../components/ui/Select";
@@ -21,6 +22,7 @@ export default function Settings() {
   const [model, setModel] = useState(resolved?.model ?? getProvider("gemini").defaultModel);
   const [status, setStatus] = useState<Status>(null);
   const [testing, setTesting] = useState(false);
+  const navigate = useNavigate();
 
   const info = getProvider(provider);
   const modelInfo = info.models.find((m) => m.id === model);
@@ -87,6 +89,13 @@ export default function Settings() {
       }
     };
     reader.readAsText(file);
+  };
+
+  const handleClearData = () => {
+    if (!window.confirm(t("settings.clearConfirm"))) return;
+    useStore.getState().resetStore();
+    setStatus({ tone: "ok", text: t("settings.cleared") });
+    setTimeout(() => navigate("/"), 800);
   };
 
   const toneClass = {
@@ -173,6 +182,9 @@ export default function Settings() {
           >
             {t("settings.import")}
           </label>
+          <Button variant="danger" onClick={handleClearData}>
+            {t("settings.clearData")}
+          </Button>
         </div>
       </div>
     </div>

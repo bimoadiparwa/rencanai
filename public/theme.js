@@ -1,8 +1,20 @@
 // Pre-hydration theme + language: avoids dark-mode flash and lang mismatch.
 (function () {
   try {
-    var store = JSON.parse(localStorage.getItem("rencanai-store") || "{}");
-    var theme = (store.state && store.state.theme) || "system";
+    var parsed;
+    try {
+      parsed = JSON.parse(localStorage.getItem("rencanai-store") || "{}");
+    } catch (e) {
+      parsed = null;
+    }
+    var state =
+      parsed && typeof parsed === "object" && parsed.state && typeof parsed.state === "object"
+        ? parsed.state
+        : {};
+    var theme = state.theme;
+    if (theme !== "light" && theme !== "dark" && theme !== "system") {
+      theme = "system";
+    }
     var dark =
       theme === "dark" ||
       (theme === "system" &&
