@@ -131,11 +131,10 @@ export default function Chat() {
   };
 
   const handleApply = () => {
-    if (!prd || !activeChat) return;
-    const last = [...activeChat.messages].reverse().find((m) => m.role === "assistant");
-    if (!last) return;
+    if (!prd) return;
+    if (!assistantText || assistantText === prd.content) return;
     if (!window.confirm(`Apply the refined PRD to "${prd.title}"?`)) return;
-    updatePrd(prd.id, { content: last.content });
+    updatePrd(prd.id, { content: assistantText });
     setStatus({ tone: "ok", text: `Applied refined PRD to "${prd.title}".` });
     setTimeout(() => setStatus(null), 3000);
   };
@@ -145,7 +144,6 @@ export default function Chat() {
     error: "border-danger/40 bg-danger/5 text-danger",
   } as const;
 
-  const assistantLast = activeChat?.messages.slice().reverse().find((m) => m.role === "assistant");
   const hasChanges = Boolean(assistantText && assistantText !== prd?.content);
 
   if (!prd) {
@@ -196,7 +194,10 @@ export default function Chat() {
           <Button variant="ghost" onClick={handleNewChat}>
             {t("chat.newChat")}
           </Button>
-          <Button onClick={handleApply} disabled={streaming || !assistantLast || !hasChanges}>
+          <Button
+            onClick={handleApply}
+            disabled={streaming || !assistantText || !hasChanges}
+          >
             {t("chat.applyToPrd")}
           </Button>
           <Button
@@ -238,7 +239,7 @@ export default function Chat() {
 
       {/* Chat box - scrollable, minimizable */}
       {!chatMinimized && (
-        <Card className="flex flex-col h-[60vh] max-h-[60vh]">
+        <Card className="flex flex-col h-[60vh] max-h-[60vh] min-h-[40vh]">
           <div className="flex-1 overflow-y-auto p-4">
             {!activeChat?.messages.length && !streaming && (
               <div className="flex h-full flex-col items-center justify-center text-center">
