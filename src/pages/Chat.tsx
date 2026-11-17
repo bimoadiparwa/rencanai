@@ -40,6 +40,7 @@ export default function Chat() {
   const [streaming, setStreaming] = useState(false);
   const [assistantText, setAssistantText] = useState("");
   const [status, setStatus] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
+  const [chatMinimized, setChatMinimized] = useState(false);
 
   useEffect(() => {
     const state = useStore.getState();
@@ -198,11 +199,18 @@ export default function Chat() {
           <Button onClick={handleApply} disabled={streaming || !assistantLast || !hasChanges}>
             {t("chat.applyToPrd")}
           </Button>
+          <Button
+            variant="ghost"
+            onClick={() => setChatMinimized((prev) => !prev)}
+            aria-label={chatMinimized ? t("chat.show") : t("chat.hide")}
+          >
+            {chatMinimized ? "▸" : "▾"}
+          </Button>
         </div>
       </div>
 
       {/* PRD comparison: Original vs Refined (documents) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className={`grid gap-6 mb-8 ${chatMinimized ? "grid-cols-1" : "md:grid-cols-2"}`}>
         <Card className="flex flex-col h-full">
           <div className="flex items-center justify-between mb-4 border-b border-line pb-2">
             <h2 className="text-lg font-semibold tracking-tight text-ink">
@@ -228,62 +236,64 @@ export default function Chat() {
         </Card>
       </div>
 
-      {/* Chat box - clearly separated */}
-      <Card className="flex flex-col h-[520px]">
-        <div className="flex-1 overflow-y-auto p-4">
-          {!activeChat?.messages.length && !streaming && (
-            <div className="flex h-full flex-col items-center justify-center text-center">
-              <p className="text-sm text-muted">{t("chat.empty")}</p>
-            </div>
-          )}
-          {activeChat?.messages.map((m, i) => {
-            const isUser = m.role === "user";
-            return (
-              <div key={i} className={`mb-4 flex ${isUser ? "justify-end" : "justify-start"}`}>
+      {/* Chat box - scrollable, minimizable */}
+      {!chatMinimized && (
+        <Card className="flex flex-col h-[60vh] max-h-[60vh]">
+          <div className="flex-1 overflow-y-auto p-4">
+            {!activeChat?.messages.length && !streaming && (
+              <div className="flex h-full flex-col items-center justify-center text-center">
+                <p className="text-sm text-muted">{t("chat.empty")}</p>
+              </div>
+            )}
+            {activeChat?.messages.map((m, i) => {
+              const isUser = m.role === "user";
+              return (
+                <div key={i} className={`mb-4 flex ${isUser ? "justify-end" : "justify-start"}`}>
+                  <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
+                    {t(isUser ? "chat.user" : "chat.assistant")}
+                  </p>
+                  <div
+                    className={`rounded-2xl p-3 text-sm leading-relaxed max-w-[85%] ${isUser ? "bg-stamp text-white" : "bg-card border border-line text-ink"}`}
+                  >
+                    <Markdown text={m.content} />
+                  </div>
+                </div>
+              );
+            })}
+            {streaming && (
+              <div className="mb-4 flex justify-start">
                 <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
-                  {t(isUser ? "chat.user" : "chat.assistant")}
+                  {t("chat.assistant")}
                 </p>
-                <div
-                  className={`rounded-2xl p-3 text-sm leading-relaxed max-w-[85%] ${isUser ? "bg-stamp text-white" : "bg-card border border-line text-ink"}`}
-                >
-                  <Markdown text={m.content} />
+                <div className="rounded-2xl p-3 text-sm leading-relaxed max-w-[85%] bg-card border border-line text-ink">
+                  {assistantText || <span className="text-muted">{t("ui.loading")}…</span>}
                 </div>
               </div>
-            );
-          })}
-          {streaming && (
-            <div className="mb-4 flex justify-start">
-              <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
-                {t("chat.assistant")}
-              </p>
-              <div className="rounded-2xl p-3 text-sm leading-relaxed max-w-[85%] bg-card border border-line text-ink">
-                {assistantText || <span className="text-muted">{t("ui.loading")}…</span>}
-              </div>
+            )}
+          </div>
+          <form onSubmit={handleSend} className="border-t border-line pt-4">
+            <Input
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder={t("chat.input")}
+              ariaLabel={t("chat.input")}
+              className="flex-1"
+            />
+            <Button
+              type="submit"
+              disabled={streaming || !text.trim() || !settings?.apiKey.trim()}
+              loading={streaming}
+            >
+              {t("chat.send")}
+            </Button>
+          </form>
+          {status && (
+            <div role="status" className={`mt-3 rounded-md border px-4 py-3 text-sm ${toneClass[status.tone]}`}>
+              {status.text}
             </div>
           )}
-        </div>
-        <form onSubmit={handleSend} className="border-t border-line pt-4">
-          <Input
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder={t("chat.input")}
-            ariaLabel={t("chat.input")}
-            className="flex-1"
-          />
-          <Button
-            type="submit"
-            disabled={streaming || !text.trim() || !settings?.apiKey.trim()}
-            loading={streaming}
-          >
-            {t("chat.send")}
-          </Button>
-        </form>
-        {status && (
-          <div role="status" className={`mt-3 rounded-md border px-4 py-3 text-sm ${toneClass[status.tone]}`}>
-            {status.text}
-          </div>
-        )}
-      </Card>
+        </Card>
+      )}
     </div>
   );
 }

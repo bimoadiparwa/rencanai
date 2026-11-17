@@ -122,6 +122,8 @@ export const en = {
   "chat.refineWithAI": "Refine with AI",
   "chat.prd": "PRD: {{title}}",
   "chat.input": "Type a message...",
+  "chat.show": "Show chat",
+  "chat.hide": "Hide chat",
   // Settings
   "settings.eyebrow": "configuration",
   "settings.title": "AI Settings",

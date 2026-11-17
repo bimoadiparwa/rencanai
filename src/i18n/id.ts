@@ -117,6 +117,8 @@ export const id: Dict = {
   "chat.refineWithAI": "Sunting dengan AI",
   "chat.prd": "PRD: {{title}}",
   "chat.input": "Ketik pesan...",
+  "chat.show": "Tampilkan obrolan",
+  "chat.hide": "Sembunyikan obrolan",
 
   "settings.eyebrow": "konfigurasi",
   "settings.title": "Pengaturan AI",
