@@ -195,17 +195,14 @@ export default function Chat() {
           <Button variant="ghost" onClick={handleNewChat}>
             {t("chat.newChat")}
           </Button>
-          <Button
-            onClick={handleApply}
-            disabled={streaming || !assistantLast || !hasChanges}
-          >
+          <Button onClick={handleApply} disabled={streaming || !assistantLast || !hasChanges}>
             {t("chat.applyToPrd")}
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Left panel: Original PRD (read-only) */}
+      {/* PRD comparison: Original vs Refined (documents) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <Card className="flex flex-col h-full">
           <div className="flex items-center justify-between mb-4 border-b border-line pb-2">
             <h2 className="text-lg font-semibold tracking-tight text-ink">
@@ -216,76 +213,77 @@ export default function Chat() {
             <Markdown text={prd.content || ""} />
           </div>
         </Card>
-
-        {/* Right panel: Refined PRD document first, then chat */}
         <Card className="flex flex-col h-full">
-          {/* Refined PRD preview - primary content */}
-          {assistantText && assistantText !== prd?.content && (
-            <div className="flex-1 min-h-[320px] overflow-y-auto p-4 prose dark:prose-invert max-w-none border-b border-line pb-4">
-              <div className="mb-4">
-                <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                  Refined PRD
-                </span>
-              </div>
-              <Markdown text={assistantText} />
-            </div>
-          )}
-          {/* Chat conversation */}
-          <div className="flex-1 min-h-[320px] flex flex-col overflow-y-auto mb-4">
-            {!activeChat?.messages.length && !streaming && (
-              <div className="flex h-full flex-col items-center justify-center text-center">
-                <p className="text-sm text-muted">{t("chat.empty")}</p>
-              </div>
-            )}
-            {activeChat?.messages.map((m, i) => {
-              const isUser = m.role === "user";
-              return (
-                <div key={i} className={`mb-4 flex ${isUser ? "justify-end" : "justify-start"}`}>
-                  <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
-                    {t(isUser ? "chat.user" : "chat.assistant")}
-                  </p>
-                  <div
-                    className={`rounded-2xl p-3 text-sm leading-relaxed max-w-[85%] ${isUser ? "bg-stamp text-white" : "bg-card border border-line text-ink"}`}
-                  >
-                    <Markdown text={m.content} />
-                  </div>
-                </div>
-              );
-            })}
-            {streaming && (
-              <div className="mb-4 flex justify-start">
-                <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
-                  {t("chat.assistant")}
-                </p>
-                <div className="rounded-2xl p-3 text-sm leading-relaxed max-w-[85%] bg-card border border-line text-ink">
-                  {assistantText || <span className="text-muted">{t("ui.loading")}…</span>}
-                </div>
-              </div>
-            )}
+          <div className="flex items-center justify-between mb-4 border-b border-line pb-2">
+            <h2 className="text-lg font-semibold tracking-tight text-ink">
+              Refined PRD
+            </h2>
+            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              {hasChanges ? "Changed" : "No changes"}
+            </span>
           </div>
-          <form onSubmit={handleSend} className="border-t border-line pt-4">
-            <Input
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder={t("chat.input")}
-              ariaLabel={t("chat.input")}
-              className="flex-1"
-            />
-            <Button
-              type="submit"
-              disabled={streaming || !text.trim() || !settings?.apiKey.trim()}
-              loading={streaming}
-            >
-              {t("chat.send")}
-            </Button>
-          </form>
-          {status && (
-            <div role="status" className={`mt-3 rounded-md border px-4 py-3 text-sm ${toneClass[status.tone]}`}>
-              {status.text}
-            </div>
-          )}
+          <div className="flex-1 overflow-y-auto p-4 prose dark:prose-invert max-w-none">
+            <Markdown text={assistantText || prd.content || ""} />
+          </div>
         </Card>
       </div>
+
+      {/* Chat box - clearly separated */}
+      <Card className="flex flex-col h-[520px]">
+        <div className="flex-1 overflow-y-auto p-4">
+          {!activeChat?.messages.length && !streaming && (
+            <div className="flex h-full flex-col items-center justify-center text-center">
+              <p className="text-sm text-muted">{t("chat.empty")}</p>
+            </div>
+          )}
+          {activeChat?.messages.map((m, i) => {
+            const isUser = m.role === "user";
+            return (
+              <div key={i} className={`mb-4 flex ${isUser ? "justify-end" : "justify-start"}`}>
+                <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
+                  {t(isUser ? "chat.user" : "chat.assistant")}
+                </p>
+                <div
+                  className={`rounded-2xl p-3 text-sm leading-relaxed max-w-[85%] ${isUser ? "bg-stamp text-white" : "bg-card border border-line text-ink"}`}
+                >
+                  <Markdown text={m.content} />
+                </div>
+              </div>
+            );
+          })}
+          {streaming && (
+            <div className="mb-4 flex justify-start">
+              <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
+                {t("chat.assistant")}
+              </p>
+              <div className="rounded-2xl p-3 text-sm leading-relaxed max-w-[85%] bg-card border border-line text-ink">
+                {assistantText || <span className="text-muted">{t("ui.loading")}…</span>}
+              </div>
+            </div>
+          )}
+        </div>
+        <form onSubmit={handleSend} className="border-t border-line pt-4">
+          <Input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder={t("chat.input")}
+            ariaLabel={t("chat.input")}
+            className="flex-1"
+          />
+          <Button
+            type="submit"
+            disabled={streaming || !text.trim() || !settings?.apiKey.trim()}
+            loading={streaming}
+          >
+            {t("chat.send")}
+          </Button>
+        </form>
+        {status && (
+          <div role="status" className={`mt-3 rounded-md border px-4 py-3 text-sm ${toneClass[status.tone]}`}>
+            {status.text}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }
