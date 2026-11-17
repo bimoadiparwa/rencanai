@@ -28,11 +28,6 @@ export function chatCompletion(opts: ChatCompletionOptions): { abort: () => void
   };
 
   const promise = (async () => {
-    let timedOut = false;
-    const timeout = setTimeout(() => {
-      timedOut = true;
-      controller.abort();
-    }, 30000);
     try {
       const spec = buildRequest({
         provider: opts.provider,
@@ -90,7 +85,6 @@ export function chatCompletion(opts: ChatCompletionOptions): { abort: () => void
       }
     } catch (err) {
       if (controller.signal.aborted) {
-        if (timedOut) fail(t("err.timeout"));
         return;
       }
       const isNetwork = err instanceof TypeError && /fetch|network|load failed/i.test(err.message);
@@ -102,8 +96,6 @@ export function chatCompletion(opts: ChatCompletionOptions): { abort: () => void
             : t("err.unexpected")
       );
       return;
-    } finally {
-      clearTimeout(timeout);
     }
   })();
 

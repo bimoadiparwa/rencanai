@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { makeId } from "../lib/id";
 import { useStore } from "../store/useStore";
 import { Button } from "../components/ui/Button";
@@ -14,8 +14,9 @@ import { useLang } from "../i18n";
 import type { Chat } from "../types";
 
 export default function Chat() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const location = useLocation();
+  const navigate = useNavigate();
   const prdId = new URLSearchParams(location.search).get("prdId") ?? undefined;
 
   const settings = useStore((s) => s.settings);
@@ -28,7 +29,6 @@ export default function Chat() {
 
   const prd = prdId ? prds.find((p) => p.id === prdId) : undefined;
   const activeChat = chats.find((c) => c.id === activeChatId);
-  const assistantLast = activeChat?.messages.slice().reverse().find((m) => m.role === "assistant");
 
   const resolved = settings ? resolveSettings(settings) : null;
   const provider: ProviderId = resolved?.provider ?? "gemini";
@@ -45,6 +45,7 @@ export default function Chat() {
     const state = useStore.getState();
     if (!prdId) {
       setActiveChat(null);
+      navigate("/dashboard");
       return;
     }
     let chat = state.chats.find((c) => c.prdId === prdId);
@@ -60,7 +61,7 @@ export default function Chat() {
       state.addChat(chat);
     }
     setActiveChat(chat.id);
-  }, [prdId]);
+  }, [prdId, navigate]);
 
   const handleNewChat = () => {
     if (!prdId) return;
@@ -93,7 +94,7 @@ export default function Chat() {
     addMessage(activeChat.id, { role: "user", content: userText });
 
     const messages: AIMessage[] = [
-      { role: "system", content: chatSystemPrompt() },
+      { role: "system", content: chatSystemPrompt(lang) },
       ...activeChat.messages.map((m) => ({ role: m.role, content: m.content })),
       { role: "user", content: userText },
     ];
@@ -137,10 +138,12 @@ export default function Chat() {
     error: "border-danger/40 bg-danger/5 text-danger",
   } as const;
 
+  const assistantLast = activeChat?.messages.slice().reverse().find((m) => m.role === "assistant");
+
   if (!prd) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10">
-        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+        <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-muted">
           {t("nav.tagline")}
         </p>
         <h1 className="text-2xl font-semibold tracking-tight text-ink">{t("chat.title")}</h1>
@@ -163,29 +166,25 @@ export default function Chat() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
-      {!settings?.apiKey.trim() && (
-        <div role="status" className="mb-6 rounded-md border border-line bg-card p-3 text-sm text-muted">
-          {t("settings.needKey")}
+    <div className="mx-auto max-w-7xl px-4 py-10">
+      <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
+            {t("nav.tagline")}
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight text-ink">
+            {t("chat.title")}
+          </h1>
+          <p className="mt-1 text-sm text-muted">{t("chat.prd", { title: prd.title })}</p>
         </div>
-      )}
-      <div className="mb-6">
-        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
-          {t("nav.tagline")}
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">
-          {activeChat?.title ?? t("chat.title")}
-        </h1>
-        <p className="mt-1 text-sm text-muted">{t("chat.prd", { title: prd.title })}</p>
-      </div>
-      <div className="flex flex-wrap gap-3 justify-between items-end mb-4">
-        <Select
-          value={modelValue}
-          onChange={setModel}
-          options={info.models.map((m) => ({ label: m.label, value: m.id }))}
-          label={t("chat.model")}
-        />
         <div className="flex flex-wrap gap-3">
+          <Select
+            value={modelValue}
+            onChange={setModel}
+            options={info.models.map((m) => ({ label: m.label, value: m.id }))}
+            label={t("chat.model")}
+            className="w-auto max-w-xs"
+          />
           <Button variant="ghost" onClick={handleNewChat}>
             {t("chat.newChat")}
           </Button>
@@ -194,57 +193,77 @@ export default function Chat() {
           </Button>
         </div>
       </div>
-      <Card className="flex-1 min-h-[320px] flex flex-col p-4 overflow-y-auto mb-4">
-        {!activeChat?.messages.length && !streaming && (
-          <p className="text-sm text-muted">{t("chat.empty")}</p>
-        )}
-        {activeChat?.messages.map((m, i) => {
-          const isUser = m.role === "user";
-          return (
-            <div key={i} className={`mb-4 flex ${isUser ? "justify-end" : "justify-start"}`}>
-              <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
-                {t(isUser ? "chat.user" : "chat.assistant")}
-              </p>
-              <div
-                className={`rounded-2xl p-3 text-sm leading-relaxed max-w-[85%] ${isUser ? "bg-stamp text-white" : "bg-card border border-line text-ink"}`}
-              >
-                <Markdown text={m.content} />
-              </div>
-            </div>
-          );
-        })}
-        {streaming && (
-          <div className="mb-4 flex justify-start">
-            <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
-              {t("chat.assistant")}
-            </p>
-            <div className="rounded-2xl p-3 text-sm leading-relaxed max-w-[85%] bg-card border border-line text-ink">
-              {assistantText || <span className="text-muted">{t("ui.loading")}…</span>}
-            </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Left panel: PRD (read-only, real-time from store) */}
+        <Card className="flex flex-col h-full">
+          <div className="flex items-center justify-between mb-4 border-b border-line pb-2">
+            <h2 className="text-lg font-semibold tracking-tight text-ink">
+              PRD
+            </h2>
           </div>
-        )}
-      </Card>
-      <form onSubmit={handleSend} className="mt-4 flex gap-3">
-        <Input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder={t("chat.input")}
-          ariaLabel={t("chat.input")}
-          className="flex-1"
-        />
-        <Button
-          type="submit"
-          disabled={streaming || !text.trim() || !settings?.apiKey.trim()}
-          loading={streaming}
-        >
-          {t("chat.send")}
-        </Button>
-      </form>
-      {status && (
-        <div role="status" className={`mt-3 rounded-md border px-4 py-3 text-sm ${toneClass[status.tone]}`}>
-          {status.text}
-        </div>
-      )}
+          <div className="flex-1 overflow-y-auto p-4 prose dark:prose-invert max-w-none">
+            <Markdown text={prd.content || ""} />
+          </div>
+        </Card>
+
+        {/* Right panel: Chat */}
+        <Card className="flex flex-col h-full">
+          <div className="flex-1 min-h-[320px] flex flex-col overflow-y-auto mb-4">
+            {!activeChat?.messages.length && !streaming && (
+              <div className="flex h-full flex-col items-center justify-center text-center">
+                <p className="text-sm text-muted">{t("chat.empty")}</p>
+              </div>
+            )}
+            {activeChat?.messages.map((m, i) => {
+              const isUser = m.role === "user";
+              return (
+                <div key={i} className={`mb-4 flex ${isUser ? "justify-end" : "justify-start"}`}>
+                  <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
+                    {t(isUser ? "chat.user" : "chat.assistant")}
+                  </p>
+                  <div
+                    className={`rounded-2xl p-3 text-sm leading-relaxed max-w-[85%] ${isUser ? "bg-stamp text-white" : "bg-card border border-line text-ink"}`}
+                  >
+                    <Markdown text={m.content} />
+                  </div>
+                </div>
+              );
+            })}
+            {streaming && (
+              <div className="mb-4 flex justify-start">
+                <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
+                  {t("chat.assistant")}
+                </p>
+                <div className="rounded-2xl p-3 text-sm leading-relaxed max-w-[85%] bg-card border border-line text-ink">
+                  {assistantText || <span className="text-muted">{t("ui.loading")}…</span>}
+                </div>
+              </div>
+            )}
+          </div>
+          <form onSubmit={handleSend} className="border-t border-line pt-4">
+            <Input
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder={t("chat.input")}
+              ariaLabel={t("chat.input")}
+              className="flex-1"
+            />
+            <Button
+              type="submit"
+              disabled={streaming || !text.trim() || !settings?.apiKey.trim()}
+              loading={streaming}
+            >
+              {t("chat.send")}
+            </Button>
+          </form>
+          {status && (
+            <div role="status" className={`mt-3 rounded-md border px-4 py-3 text-sm ${toneClass[status.tone]}`}>
+              {status.text}
+            </div>
+          )}
+        </Card>
+      </div>
     </div>
   );
 }
