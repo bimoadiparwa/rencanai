@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/Button";
+import { PwaInstallBanner } from "../components/ui/PwaInstallBanner";
 import { useReveal } from "../hooks/useReveal";
 import { useLang } from "../i18n";
 import { KeyRound, HardDrive, Check } from "lucide-react";
@@ -230,6 +231,7 @@ export default function Landing() {
             </div>
           </div>
         </section>
+        <PwaInstallBanner />
       </div>
   );
 }
