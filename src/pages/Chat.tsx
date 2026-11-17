@@ -40,7 +40,6 @@ export default function Chat() {
   const [streaming, setStreaming] = useState(false);
   const [assistantText, setAssistantText] = useState("");
   const [status, setStatus] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
-  const [showDiff, setShowDiff] = useState(false);
 
   useEffect(() => {
     const state = useStore.getState();
@@ -84,7 +83,6 @@ export default function Chat() {
     setActiveChat(chat.id);
     setAssistantText("");
     setStatus(null);
-    setShowDiff(false);
   };
 
   const handleSend = async (e: React.FormEvent) => {
@@ -96,7 +94,6 @@ export default function Chat() {
     setAssistantText("");
     setStreaming(true);
     setStatus(null);
-    setShowDiff(false);
 
     addMessage(activeChat.id, { role: "user", content: userText });
 
@@ -128,7 +125,6 @@ export default function Chat() {
       setStreaming(false);
       if (assistantText) {
         addMessage(activeChat.id, { role: "assistant", content: assistantText });
-        setShowDiff(true);
       }
     }
   };
@@ -140,7 +136,6 @@ export default function Chat() {
     if (!window.confirm(`Apply the refined PRD to "${prd.title}"?`)) return;
     updatePrd(prd.id, { content: last.content });
     setStatus({ tone: "ok", text: `Applied refined PRD to "${prd.title}".` });
-    setShowDiff(false);
     setTimeout(() => setStatus(null), 3000);
   };
 
@@ -222,8 +217,20 @@ export default function Chat() {
           </div>
         </Card>
 
-        {/* Right panel: Chat + Refined PRD preview */}
+        {/* Right panel: Refined PRD document first, then chat */}
         <Card className="flex flex-col h-full">
+          {/* Refined PRD preview - primary content */}
+          {assistantText && assistantText !== prd?.content && (
+            <div className="flex-1 min-h-[320px] overflow-y-auto p-4 prose dark:prose-invert max-w-none border-b border-line pb-4">
+              <div className="mb-4">
+                <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                  Refined PRD
+                </span>
+              </div>
+              <Markdown text={assistantText} />
+            </div>
+          )}
+          {/* Chat conversation */}
           <div className="flex-1 min-h-[320px] flex flex-col overflow-y-auto mb-4">
             {!activeChat?.messages.length && !streaming && (
               <div className="flex h-full flex-col items-center justify-center text-center">
@@ -256,19 +263,6 @@ export default function Chat() {
               </div>
             )}
           </div>
-
-          {/* Refined PRD preview */}
-          {showDiff && assistantText && assistantText !== prd?.content && (
-            <div className="border-t border-line pt-4 flex-1 min-h-[200px] overflow-y-auto p-4 prose dark:prose-invert max-w-none">
-              <div className="flex items-center justify-between mb-2 border-b border-b-line pb-1">
-                <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                  Refined preview
-                </span>
-              </div>
-              <Markdown text={assistantText} />
-            </div>
-          )}
-
           <form onSubmit={handleSend} className="border-t border-line pt-4">
             <Input
               value={text}
