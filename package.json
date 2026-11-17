@@ -1,7 +1,27 @@
 {
   "name": "rencanai",
+  "description": "Generator PRD gratis berbasis AI - tanpa server, tanpa login, BYOK (bring your own key)",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
+  "license": "MIT",
+  "author": "Bimo Adiparwa <https://github.com/bimoadiparwa>",
+  "homepage": "https://bimoadiparwa.github.io/rencanai/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bimoadiparwa/rencanai.git"
+  },
+  "bugs": "https://github.com/bimoadiparwa/rencanai/issues",
+  "keywords": [
+    "prd",
+    "product-requirements",
+    "ai",
+    "gemini",
+    "openrouter",
+    "groq",
+    "byok",
+    "product-manager",
+    "streaming"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
