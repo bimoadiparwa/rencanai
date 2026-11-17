@@ -23,11 +23,6 @@ export function generatePrd(opts: GeneratePrdOptions): { abort: () => void; prom
 
   const promise = (async () => {
     let finished = false;
-    let timedOut = false;
-    const timeout = setTimeout(() => {
-      timedOut = true;
-      controller.abort();
-    }, 30000);
     try {
       const spec = buildRequest({
         provider: opts.provider,
@@ -86,7 +81,6 @@ export function generatePrd(opts: GeneratePrdOptions): { abort: () => void; prom
       finished = true;
     } catch (err) {
       if (controller.signal.aborted) {
-        if (timedOut) fail(t("err.timeout"));
         return;
       }
       const isNetwork = err instanceof TypeError && /fetch|network|load failed/i.test(err.message);
@@ -98,8 +92,6 @@ export function generatePrd(opts: GeneratePrdOptions): { abort: () => void; prom
             : t("err.unexpected")
       );
       return;
-    } finally {
-      clearTimeout(timeout);
     }
     // Outside the network try: a failure while saving must not look like a connection error.
     if (finished) {
