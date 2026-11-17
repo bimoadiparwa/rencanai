@@ -5,26 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#fafafa" />
     <title>RencanAI — PRD Generator Gratis</title>
-    <script>
-      // Pre-hydration theme + language: avoids dark-mode flash and lang mismatch.
-      (function () {
-        try {
-          var store = JSON.parse(localStorage.getItem("rencanai-store") || "{}");
-          var theme = (store.state && store.state.theme) || "system";
-          var dark =
-            theme === "dark" ||
-            (theme === "system" &&
-              window.matchMedia("(prefers-color-scheme: dark)").matches);
-          if (dark) document.documentElement.classList.add("dark");
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute("content", dark ? "#0a0a0b" : "#fafafa");
-          var lang = localStorage.getItem("rencanai-lang");
-          if (lang === "en" || lang === "id") document.documentElement.lang = lang;
-        } catch (e) {}
-      })();
-    </script>
-    <script type="module" crossorigin src="/rencanai/assets/index-uy0TkPMO.js"></script>
-    <link rel="stylesheet" crossorigin href="/rencanai/assets/index-cCBnuFeD.css">
+    <script src="theme.js"></script>
+    <script type="module" crossorigin src="/rencanai/assets/index-Behe5fvn.js"></script>
+    <link rel="stylesheet" crossorigin href="/rencanai/assets/index-BUgjo96x.css">
   </head>
   <body>
     <div id="root"></div>
