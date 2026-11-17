@@ -122,16 +122,6 @@ export const en = {
   "chat.refineWithAI": "Refine with AI",
   "chat.prd": "PRD: {{title}}",
   "chat.input": "Type a message...",
-  // Design
-  "design.goToDesign": "Design canvas",
-  "design.title": "Design preview",
-  "design.titleLabel": "Project title",
-  "design.accent": "Accent color",
-  "design.layout": "Layout",
-  "design.export": "Export preview",
-  "design.docCover": "Document cover",
-  "design.preview": "Preview",
-  "design.taskCard": "Task card",
   // Settings
   "settings.eyebrow": "configuration",
   "settings.title": "AI Settings",

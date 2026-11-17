@@ -177,6 +177,11 @@ export function systemPrompt(lang: Lang = getLang()): string {
 // Back-compat export (Bahasa Indonesia template).
 export const SYSTEM_PROMPT = SYSTEM_PROMPTS.id;
 
+export interface AIMessage {
+  role: "system" | "user" | "assistant";
+  content: string;
+}
+
 export interface RequestSpec {
   url: string;
   headers: Record<string, string>;
@@ -184,23 +189,32 @@ export interface RequestSpec {
 }
 
 // Pure request builder: the only place that knows each provider's wire format.
+// Accepts either a single `userText` (PRD generation) or a full chat message
+// list (system + user/assistant). Both produce `stream: true` bodies.
 export function buildRequest(opts: {
   provider: ProviderId;
   model: string;
   apiKey: string;
-  userText: string;
+  userText?: string;
+  messages?: AIMessage[];
   stream: boolean;
   maxTokens?: number;
 }): RequestSpec {
-  const { provider, model, apiKey, userText, stream, maxTokens } = opts;
+  const { provider, model, apiKey, stream, maxTokens } = opts;
+  const system = opts.messages?.find((m) => m.role === "system")?.content ?? systemPrompt();
+  const turns = (opts.messages ?? []).filter((m) => m.role !== "system");
+  if (opts.userText) turns.push({ role: "user", content: opts.userText });
   if (provider === "gemini") {
     const method = stream ? "streamGenerateContent?alt=sse" : "generateContent";
     return {
       url: `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:${method}`,
       headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: systemPrompt() }] },
-        contents: [{ role: "user", parts: [{ text: userText }] }],
+        systemInstruction: { parts: [{ text: system }] },
+        contents: turns.map((m) => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [{ text: m.content }],
+        })),
         generationConfig: maxTokens ? { maxOutputTokens: maxTokens } : { temperature: 0.4 },
       }),
     };
@@ -214,10 +228,7 @@ export function buildRequest(opts: {
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({
       model,
-      messages: [
-        { role: "system", content: systemPrompt() },
-        { role: "user", content: userText },
-      ],
+      messages: [{ role: "system", content: system }, ...turns],
       stream,
       temperature: 0.4,
       ...(maxTokens ? { max_tokens: maxTokens } : {}),

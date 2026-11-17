@@ -1,7 +1,7 @@
 import { makeId } from "../lib/id";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { Prd, Task, Settings, Theme } from "../types";
+import type { Chat, ChatMessage, Prd, Task, Settings, Theme } from "../types";
 
 export interface StoreAdapter {
   getItem(key: string): Promise<string | null>;
@@ -39,11 +39,17 @@ interface PrdState {
   prds: Prd[];
   settings: Settings | null;
   theme: Theme;
+  chats: Chat[];
+  activeChatId: string | null;
   addPrd: (prd: Prd) => void;
   updatePrd: (id: string, patch: Partial<Omit<Prd, "id">>) => void;
   deletePrd: (id: string) => void;
   setSettings: (settings: Settings) => void;
   setTheme: (theme: Theme) => void;
+  addChat: (chat: Chat) => void;
+  addMessage: (chatId: string, message: ChatMessage) => void;
+  setActiveChat: (id: string | null) => void;
+  deleteChat: (id: string) => void;
   addTask: (prdId: string, task: Omit<Task, "id" | "createdAt">) => void;
   updateTaskStatus: (prdId: string, taskId: string, status: Task["status"]) => void;
   deleteTask: (prdId: string, taskId: string) => void;
@@ -58,6 +64,8 @@ export function createStore(opts: { storage?: StoreAdapter }) {
         prds: [],
         settings: null,
         theme: "system",
+        chats: [],
+        activeChatId: null,
         addPrd: (prd) => set((state) => ({ prds: [...state.prds, prd] })),
         updatePrd: (id, patch) =>
           set((state) => ({
@@ -68,6 +76,22 @@ export function createStore(opts: { storage?: StoreAdapter }) {
         deletePrd: (id) => set((state) => ({ prds: state.prds.filter((p) => p.id !== id) })),
         setSettings: (settings) => set({ settings }),
         setTheme: (theme) => set({ theme }),
+        addChat: (chat) => set((state) => ({ chats: [chat, ...state.chats] })),
+        addMessage: (chatId, message) =>
+          set((state) => ({
+            chats: state.chats.map((c) =>
+              c.id === chatId ? { ...c, messages: [...c.messages, message], updatedAt: Date.now() } : c
+            ),
+          })),
+        setActiveChat: (id) => set({ activeChatId: id }),
+        deleteChat: (id) =>
+          set((state) => {
+            const chats = state.chats.filter((c) => c.id === id);
+            return {
+              chats,
+              activeChatId: state.activeChatId === id ? (chats[0]?.id ?? null) : state.activeChatId,
+            };
+          }),
         addTask: (prdId, task) =>
           set((state) => ({
             prds: state.prds.map((p) =>
@@ -98,7 +122,7 @@ export function createStore(opts: { storage?: StoreAdapter }) {
               p.id === prdId ? { ...p, tasks: p.tasks.filter((t) => t.id !== taskId), updatedAt: Date.now() } : p
             ),
           })),
-        resetStore: () => set({ prds: [], settings: null }),
+        resetStore: () => set({ prds: [], settings: null, chats: [], activeChatId: null }),
       }),
       {
         name: "rencanai-store",
@@ -115,6 +139,10 @@ export function createStore(opts: { storage?: StoreAdapter }) {
     deletePrd: actions.deletePrd,
     setSettings: actions.setSettings,
     setTheme: actions.setTheme,
+    addChat: actions.addChat,
+    addMessage: actions.addMessage,
+    setActiveChat: actions.setActiveChat,
+    deleteChat: actions.deleteChat,
     addTask: actions.addTask,
     updateTaskStatus: actions.updateTaskStatus,
     deleteTask: actions.deleteTask,

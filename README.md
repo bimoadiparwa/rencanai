@@ -156,8 +156,6 @@ Panggilan AI berlangsung **langsung dari browser ke provider** (Gemini / OpenRou
 - Mode gelap tersedia (terang / gelap / sistem, mengikuti OS).
 
 - [x] PWA (offline-ready, installable)
-- [x] Standalone task-list generator (tanpa PRD)
-- [x] Alat desain berbasis AI (lanjutan dari scope awal)
 - [x] Multi-model chat untuk iterasi PRD
 
 ## Kredit

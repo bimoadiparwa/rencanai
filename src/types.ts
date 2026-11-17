@@ -26,3 +26,19 @@ export interface Settings {
 }
 
 export type Theme = "light" | "dark" | "system";
+
+export type ChatRole = "user" | "assistant";
+
+export interface ChatMessage {
+  role: ChatRole;
+  content: string;
+}
+
+export interface Chat {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  createdAt: number;
+  updatedAt: number;
+  prdId?: string;
+}

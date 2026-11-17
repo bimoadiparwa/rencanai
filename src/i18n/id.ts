@@ -21,6 +21,11 @@ export const id: Dict = {
   "lang.switch": "Ganti ke English",
   "lang.other": "EN",
 
+  // PWA
+  "pwa.install": "Pasang Aplikasi",
+  "pwa.installed": "Terpasang!",
+  "pwa.dismiss": "Tutup",
+
   "landing.heroTitle": "Bikin PRD dalam hitungan detik",
   "landing.heroSub":
     "Dari ide proyek menjadi dokumen PRD lengkap dengan daftar tugas siap eksekusi — dikembangkan AI dengan API key Anda sendiri.",
@@ -98,6 +103,21 @@ export const id: Dict = {
   "tasks.markDone": 'Tandai "{{title}}" selesai',
   "tasks.delete": "Hapus",
 
+  // Chat
+  "chat.title": "Obrolan AI",
+  "chat.send": "Kirim",
+  "chat.newChat": "Obrolan baru",
+  "chat.model": "Model",
+  "chat.applyToPrd": "Terapkan ke PRD",
+  "chat.noPrd": "Belum ada PRD yang dipilih",
+  "chat.empty": "Belum ada pesan. Sunting PRD Anda dengan AI.",
+  "chat.user": "Anda",
+  "chat.assistant": "Asisten",
+  "chat.switchPrd": "Buka PRD",
+  "chat.refineWithAI": "Sunting dengan AI",
+  "chat.prd": "PRD: {{title}}",
+  "chat.input": "Ketik pesan...",
+
   "settings.eyebrow": "konfigurasi",
   "settings.title": "Pengaturan AI",
   "settings.privacy":
@@ -150,15 +170,12 @@ export const id: Dict = {
   "prov.groq.n2": "Paling cepat",
   "prov.groq.n3": "Model terbuka OpenAI, dengan penalaran",
   "prov.groq.n4": "Model terbuka OpenAI, ringan",
-
-  "design.titleLabel": "Judul proyek",
   "err.400": "Permintaan ditolak penyedia{{detail}}.",
   "err.401":
     "API key tidak valid atau tidak punya akses ke model ini{{detail}}. Periksa kunci di Pengaturan.",
   "err.404":
     "Model tidak ditemukan atau tidak tersedia untuk akun ini{{detail}}. Pilih model lain di Pengaturan.",
-  "err.429":
-    "Batas gratis tercapai (rate limit){{detail}}. Tunggu beberapa menit lalu coba lagi, atau pilih model lain.",
+  "err.429": "Batas gratis tercapai (rate limit){{detail}}. Tunggu beberapa menit lalu coba lagi, atau pilih model lain.",
   "err.5xx": "Penyedia AI sedang bermasalah ({{status}}). Coba lagi sebentar lagi.",
   "err.other": "Gagal memanggil AI ({{status}}){{detail}}.",
   "err.stream": "Penyedia AI menghentikan respons: {{detail}}",

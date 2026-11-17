@@ -7,6 +7,7 @@ import PrdCreate from "./pages/PrdCreate";
 import PrdEditor from "./pages/PrdEditor";
 import Tasks from "./pages/Tasks";
 import Settings from "./pages/Settings";
+import Chat from "./pages/Chat";
 import KeyGuard from "./components/layout/KeyGuard";
 import { useStore } from "./store/useStore";
 import { applyTheme, watchSystemTheme } from "./theme";
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/prd/:id" element={<PrdEditor />} />
         <Route path="/tasks/:prdId" element={<Tasks />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/chat" element={<Chat />} />
       </Route>
     </Routes>
   );

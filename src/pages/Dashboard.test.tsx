@@ -32,7 +32,7 @@ function renderDashboard() {
     <MemoryRouter initialEntries={["/dashboard"]}>
       <Dashboard />
       <LocationProbe />
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }
 

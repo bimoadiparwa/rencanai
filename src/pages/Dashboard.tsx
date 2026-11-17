@@ -39,7 +39,9 @@ export default function Dashboard() {
         <EmptyState
           title={t("dash.emptyTitle")}
           description={t("dash.emptyDesc")}
-          action={<Button onClick={() => navigate("/prd/create")}>{t("dash.new")}</Button>}
+          action={
+            <Button onClick={() => navigate("/prd/create")}>{t("dash.new")}</Button>
+          }
         />
       ) : (
         <div className="divide-y divide-line border-y border-line">

@@ -100,6 +100,9 @@ export default function PrdEditor() {
         <Link to={`/tasks/${prd.id}`}>
           <Button variant="ghost">{t("editor.backTasks")}</Button>
         </Link>
+        <Link to={`/chat?prdId=${prd.id}`}>
+          <Button variant="ghost">{t("chat.refineWithAI")}</Button>
+        </Link>
         <Button onClick={handleExport}>{t("editor.export")}</Button>
       </div>
     </div>
