@@ -44,8 +44,14 @@ export default function Chat() {
   useEffect(() => {
     const state = useStore.getState();
     if (!prdId) {
+      // Auto-select the most recently updated PRD so users land straight into
+      // refining instead of an empty state.
+      const mostRecent = [...state.prds].sort((a, b) => b.updatedAt - a.updatedAt)[0];
+      if (mostRecent) {
+        navigate(`/chat?prdId=${mostRecent.id}`);
+        return;
+      }
       setActiveChat(null);
-      navigate("/dashboard");
       return;
     }
     let chat = state.chats.find((c) => c.prdId === prdId);
@@ -93,8 +99,10 @@ export default function Chat() {
 
     addMessage(activeChat.id, { role: "user", content: userText });
 
+    const prdContext = prd?.content ? `\n\n---\n# Current PRD: ${prd.title}\n${prd.content}\n---\n` : "";
+
     const messages: AIMessage[] = [
-      { role: "system", content: chatSystemPrompt(lang) },
+      { role: "system", content: chatSystemPrompt(lang) + prdContext },
       ...activeChat.messages.map((m) => ({ role: m.role, content: m.content })),
       { role: "user", content: userText },
     ];
