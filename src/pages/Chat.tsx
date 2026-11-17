@@ -172,7 +172,7 @@ export default function Chat() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-10 min-h-screen">
       <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted">
@@ -202,13 +202,13 @@ export default function Chat() {
             onClick={() => setChatMinimized((prev) => !prev)}
             aria-label={chatMinimized ? t("chat.show") : t("chat.hide")}
           >
-            {chatMinimized ? "▸" : "▾"}
+            {chatMinimized ? "▸ Show chat" : "▾ Hide chat"}
           </Button>
         </div>
       </div>
 
       {/* PRD comparison: Original vs Refined (documents) */}
-      <div className={`grid gap-6 ${chatMinimized ? "grid-cols-1" : "md:grid-cols-2"}`}>
+      <div className={`grid gap-6 mb-8 ${chatMinimized ? "grid-cols-1" : "md:grid-cols-2"}`}>
         <Card className="flex flex-col h-full">
           <div className="flex items-center justify-between mb-4 border-b border-line pb-2">
             <h2 className="text-lg font-semibold tracking-tight text-ink">
@@ -236,7 +236,8 @@ export default function Chat() {
 
       {/* Chat box - flex scrollable, minimizable */}
       {!chatMinimized && (
-        <Card className="flex flex-col h-[55vh] max-h-[55vh] min-h-[35vh]">
+        <Card className="flex flex-col h-[50vh] max-h-[60vh]">
+          {/* Scrollable message area */}
           <div className="flex-1 overflow-y-auto p-4">
             {!activeChat?.messages.length && !streaming && (
               <div className="flex h-full flex-col items-center justify-center text-center">
@@ -269,7 +270,8 @@ export default function Chat() {
               </div>
             )}
           </div>
-          <form onSubmit={handleSend} className="border-t border-line pt-4">
+          {/* Fixed input at bottom */}
+          <form onSubmit={handleSend} className="border-t border-line p-4 flex items-end gap-2 bg-white/5 dark:bg-card/50 backdrop-blur-sm">
             <Input
               value={text}
               onChange={(e) => setText(e.target.value)}
